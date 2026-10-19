@@ -86,7 +86,7 @@ else
     {
         echo "PHX_HOST=umber.jeffgicharu.com"
         echo "DATABASE_URL=ecto://umber:$db_password@127.0.0.1/umber"
-        echo "POOL_SIZE=8"
+        echo "POOL_SIZE=6"
         echo "SECRET_KEY_BASE=$(openssl rand -base64 48 | tr -d '\n')"
         echo "RELEASE_COOKIE=$(openssl rand -hex 32)"
         echo "VAPID_SUBJECT=https://umber.jeffgicharu.com"

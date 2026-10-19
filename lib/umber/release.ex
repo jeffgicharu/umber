@@ -13,11 +13,17 @@ defmodule Umber.Release do
   @app :umber
   @sample_bidders 40
 
+  # Release tasks run beside two slots during a switch: 8 connections each
+  # (a pool of 6, the broadcast listener and the job queue's listener), plus
+  # these 2, within the role's limit of 20.
+  @task_pool [pool_size: 2]
+
   def migrate do
     load_app()
 
     for repo <- repos() do
-      {:ok, _, _} = Ecto.Migrator.with_repo(repo, &Ecto.Migrator.run(&1, :up, all: true))
+      {:ok, _, _} =
+        Ecto.Migrator.with_repo(repo, &Ecto.Migrator.run(&1, :up, all: true), @task_pool)
     end
   end
 
@@ -25,10 +31,14 @@ defmodule Umber.Release do
     load_app()
 
     {:ok, _, _} =
-      Ecto.Migrator.with_repo(Repo, fn _ ->
-        {:ok, :ok} = Umber.Catalogue.import!()
-        ensure_sample_bidders()
-      end)
+      Ecto.Migrator.with_repo(
+        Repo,
+        fn _ ->
+          {:ok, :ok} = Umber.Catalogue.import!()
+          ensure_sample_bidders()
+        end,
+        @task_pool
+      )
 
     :ok
   end
@@ -74,17 +84,21 @@ defmodule Umber.Release do
     Application.ensure_all_started(:ecto_sql)
 
     {:ok, _, paths} =
-      Ecto.Migrator.with_repo(Repo, fn _ ->
-        sales =
-          from(s in Umber.Catalogue.Sale,
-            where: s.published and s.status != "draft",
-            order_by: [desc: s.number],
-            limit: 3
-          )
-          |> Repo.all()
+      Ecto.Migrator.with_repo(
+        Repo,
+        fn _ ->
+          sales =
+            from(s in Umber.Catalogue.Sale,
+              where: s.published and s.status != "draft",
+              order_by: [desc: s.number],
+              limit: 3
+            )
+            |> Repo.all()
 
-        Enum.flat_map(sales, &["/sales/#{&1.number}", "/sales/#{&1.number}/lots/1"])
-      end)
+          Enum.flat_map(sales, &["/sales/#{&1.number}", "/sales/#{&1.number}/lots/1"])
+        end,
+        @task_pool
+      )
 
     @static_paths ++ paths
   end
@@ -113,7 +127,9 @@ defmodule Umber.Release do
     case :httpc.request(
            :get,
            {String.to_charlist(url), [{~c"user-agent", ~c"umber-release-check"}]},
-           [timeout: 15_000, autoredirect: false], body_format: :binary) do
+           [timeout: 15_000, autoredirect: false],
+           body_format: :binary
+         ) do
       {:ok, {{_, status, _}, headers, body}} ->
         {:ok, status, Map.new(headers, fn {k, v} -> {to_string(k), to_string(v)} end), body}
 

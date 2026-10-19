@@ -35,9 +35,10 @@ if config_env() == :prod do
 
   config :umber, Umber.Repo,
     url: database_url,
-    # Two release slots run side by side during a switch, each with its own
-    # pool, within the role's connection limit of 20.
-    pool_size: String.to_integer(System.get_env("POOL_SIZE") || "8")
+    # Two release slots run side by side during a switch: each holds this
+    # pool plus two listening connections (broadcasts and the job queue).
+    # With the release tasks' two, that stays within the role's limit of 20.
+    pool_size: String.to_integer(System.get_env("POOL_SIZE") || "6")
 
   secret_key_base =
     System.get_env("SECRET_KEY_BASE") ||
