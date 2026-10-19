@@ -138,6 +138,8 @@ jobs:
   deploy:
     name: Deploy to umber.jeffgicharu.com
     needs: build
+    # Set the repository variable DEPLOY to "on" once the server is prepared.
+    if: vars.DEPLOY == 'on'
     runs-on: ubuntu-24.04
     environment:
       name: production
