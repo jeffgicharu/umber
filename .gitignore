@@ -1,0 +1,28 @@
+# Local working notes.
+/notes/
+
+# Local exports: screenshots and write-ups.
+/handoff/
+
+# Picture masters and the image pipeline; only optimised files under priv/static are committed.
+/generated/
+
+# Local tools and scratch.
+.playwright-cli/
+*.log
+.DS_Store
+
+# Build output and dependencies.
+/_build/
+/cover/
+/deps/
+/doc/
+/.fetch
+erl_crash.dump
+*.ez
+/tmp/
+umber-*.tar
+/priv/static/assets/
+/priv/static/cache_manifest.json
+/assets/node_modules/
+/_release/

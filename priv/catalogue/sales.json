@@ -1,0 +1,49 @@
+[
+  {
+    "key": "modern-contemporary",
+    "title": "Modern & Contemporary East African Art",
+    "format": "live",
+    "category": "Art",
+    "running": true,
+    "summary": "Paintings and sculpture from four decades, sold live from the rostrum at Umber House with bidding online and in the room.",
+    "description": "Our live sale brings together paintings and sculpture by artists from Kenya, Tanzania, Uganda and Ethiopia, from Juma Mwakalinga's Dar es Salaam of the 1980s to new carved work by Kiprop Langat. The auctioneer takes bids from the room, the telephones and online at once, and every lot is sold within a minute or two. Register before the sale to bid from your phone."
+  },
+  {
+    "key": "paper-photographs",
+    "title": "Works on Paper & Photographs",
+    "format": "timed",
+    "category": "Works on paper",
+    "running": true,
+    "summary": "Prints, drawings, watercolours and photographs in an online sale that closes lot by lot.",
+    "description": "Linocuts by Elias Thuo, coast drawings by Lulu Abdalla, rooftop watercolours by Wangui Kariuki, and photographs from Kigali, Dar es Salaam and Nairobi. Lots close one after another, and a bid in the last two minutes gives that lot two more."
+  },
+  {
+    "key": "design-objects",
+    "title": "Design: Furniture, Lighting & Objects",
+    "format": "timed",
+    "category": "Design",
+    "running": true,
+    "summary": "Furniture, lighting, ceramics and textiles from Nairobi workshops, old and new, in an online sale that closes lot by lot.",
+    "description": "New work from Studio Kokwet, Halima Juma and Mwanga Works sits beside teak and mahogany pieces made in Nairobi's joinery workshops in the 1960s and a brass coffee pot from Mombasa. Lots close one after another, and a bid in the last two minutes gives that lot two more."
+  },
+  {
+    "key": "modern-contemporary-september-2026",
+    "title": "Modern & Contemporary East African Art",
+    "format": "live",
+    "category": "Art",
+    "running": false,
+    "held_at": "2026-09-24T19:00:00+03:00",
+    "summary": "Our September evening sale, held live at Umber House.",
+    "description": "Twelve lots sold in the room and online on the evening of 24 September 2026. Eleven found buyers, and Zawadi Mrema's Kigamboni Ferry, Night set a record for the artist."
+  },
+  {
+    "key": "design-august-2026",
+    "title": "Design: Furniture, Lighting & Objects",
+    "format": "timed",
+    "category": "Design",
+    "running": false,
+    "held_at": "2026-08-20T20:00:00+03:00",
+    "summary": "Our August online design sale, closed lot by lot on 20 August 2026.",
+    "description": "Eight lots of furniture, lighting, ceramics and textiles, closing one after another on the evening of 20 August 2026."
+  }
+]
