@@ -38,6 +38,9 @@ jobs:
           --health-interval 5s
           --health-timeout 5s
           --health-retries 10
+    defaults:
+      run:
+        shell: bash
     env:
       LANG: C.UTF-8
       MIX_ENV: test
@@ -116,12 +119,13 @@ jobs:
           _release/bin/umber eval "Umber.Release.migrate()"
           _release/bin/umber eval "Umber.Release.seed()"
           _release/bin/umber start > serve.log 2>&1 &
+          release_pid=$!
           for i in $(seq 1 60); do curl -fs http://127.0.0.1:8500/healthz >/dev/null && break; sleep 1; done
           status=0
           _release/bin/umber eval "Umber.Release.check(\"http://127.0.0.1:8500\", \"$GITHUB_SHA\")" || status=$?
           # Distribution is off, so the release stops on SIGTERM, as systemd stops it.
-          kill -TERM %1 || true
-          wait %1 || true
+          kill -TERM "$release_pid" || true
+          timeout 30 tail --pid="$release_pid" -f /dev/null || kill -KILL "$release_pid" || true
           echo "--- server log"; tail -n 80 serve.log
           exit $status
 
