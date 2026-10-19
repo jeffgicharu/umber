@@ -196,13 +196,15 @@ serves_the_release() {
             return 1
         fi
     done < <(as_app eval "Umber.Release.print_paths()")
-    # The live socket through nginx answers 101 Switching Protocols.
-    upgrade="$(fetch --http1.1 --max-time 4 --output /dev/null --write-out '%{http_code}' \
+    # The live socket through nginx answers 101 Switching Protocols. The key
+    # must be 16 bytes, base64 encoded. An open socket never ends by itself, so
+    # curl is cut off and only the status line it has already printed counts.
+    upgrade="$(fetch --http1.1 --max-time 4 --dump-header - --output /dev/null \
         -H "Connection: Upgrade" -H "Upgrade: websocket" -H "Origin: https://$HOST" \
-        -H "Sec-WebSocket-Version: 13" -H "Sec-WebSocket-Key: dW1iZXItYWN0aXZhdGUtMDE=" \
-        "https://$HOST/live/websocket?vsn=2.0.0" 2>/dev/null || true)"
-    if [[ "$upgrade" != "101" ]]; then
-        echo "The live socket does not upgrade through nginx (got $upgrade)." >&2
+        -H "Sec-WebSocket-Version: 13" -H "Sec-WebSocket-Key: dW1iZXItYWN0aXZhdGUtMQ==" \
+        "https://$HOST/live/websocket?vsn=2.0.0" 2>/dev/null | head -n 1 | tr -d '\r' || true)"
+    if [[ "$upgrade" != "HTTP/1.1 101"* ]]; then
+        echo "The live socket does not upgrade through nginx (got: ${upgrade:-nothing})." >&2
         return 1
     fi
 }
