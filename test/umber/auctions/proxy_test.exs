@@ -53,7 +53,8 @@ defmodule Umber.Auctions.ProxyTest do
     end
 
     test "below the opening bid is refused with the lowest acceptable amount" do
-      assert Proxy.resolve(@lot, [], %{user_id: 1, amount: 90_000, at: 0, kind: :max}) == {:error, {:too_low, 100_000}}
+      assert Proxy.resolve(@lot, [], %{user_id: 1, amount: 90_000, at: 0, kind: :max}) ==
+               {:error, {:too_low, 100_000}}
     end
   end
 
@@ -64,28 +65,45 @@ defmodule Umber.Auctions.ProxyTest do
       {:ok, lot: lot, maxes: [max(1, 300_000, 0)]}
     end
 
-    test "a lower bid is answered by the leader's maximum, one step above it", %{lot: lot, maxes: maxes} do
-      assert {:ok, r} = Proxy.resolve(lot, maxes, %{user_id: 2, amount: 110_000, at: 1, kind: :bid})
+    test "a lower bid is answered by the leader's maximum, one step above it", %{
+      lot: lot,
+      maxes: maxes
+    } do
+      assert {:ok, r} =
+               Proxy.resolve(lot, maxes, %{user_id: 2, amount: 110_000, at: 1, kind: :bid})
+
       assert r.leader_id == 1
       assert r.price == 120_000
       assert r.entries == [{2, 110_000, "bid"}, {1, 120_000, "proxy"}]
     end
 
-    test "a higher maximum takes the lead at one step above the old maximum", %{lot: lot, maxes: maxes} do
-      assert {:ok, r} = Proxy.resolve(lot, maxes, %{user_id: 2, amount: 500_000, at: 1, kind: :max})
+    test "a higher maximum takes the lead at one step above the old maximum", %{
+      lot: lot,
+      maxes: maxes
+    } do
+      assert {:ok, r} =
+               Proxy.resolve(lot, maxes, %{user_id: 2, amount: 500_000, at: 1, kind: :max})
+
       assert r.leader_id == 2
       assert r.price == 320_000
       assert r.entries == [{1, 300_000, "proxy"}, {2, 320_000, "proxy"}]
     end
 
     test "an equal maximum loses to the earlier one, at that amount", %{lot: lot, maxes: maxes} do
-      assert {:ok, r} = Proxy.resolve(lot, maxes, %{user_id: 2, amount: 300_000, at: 1, kind: :max})
+      assert {:ok, r} =
+               Proxy.resolve(lot, maxes, %{user_id: 2, amount: 300_000, at: 1, kind: :max})
+
       assert r.leader_id == 1
       assert r.price == 300_000
     end
 
-    test "a maximum just above the leader's pays its own amount, not more", %{lot: lot, maxes: maxes} do
-      assert {:ok, r} = Proxy.resolve(lot, maxes, %{user_id: 2, amount: 310_000, at: 1, kind: :max})
+    test "a maximum just above the leader's pays its own amount, not more", %{
+      lot: lot,
+      maxes: maxes
+    } do
+      assert {:ok, r} =
+               Proxy.resolve(lot, maxes, %{user_id: 2, amount: 310_000, at: 1, kind: :max})
+
       assert r.leader_id == 2
       assert r.price == 310_000
     end
@@ -94,13 +112,22 @@ defmodule Umber.Auctions.ProxyTest do
   describe "the leader" do
     test "cannot tap to bid against themselves" do
       lot = %{@lot | current_bid: 100_000, leader_id: 1}
-      assert Proxy.resolve(lot, [max(1, 100_000, 0)], %{user_id: 1, amount: 110_000, at: 1, kind: :bid}) == {:error, :already_leading}
+
+      assert Proxy.resolve(lot, [max(1, 100_000, 0)], %{
+               user_id: 1,
+               amount: 110_000,
+               at: 1,
+               kind: :bid
+             }) == {:error, :already_leading}
     end
 
     test "raising their maximum does not raise the price" do
       lot = %{@lot | current_bid: 120_000, leader_id: 1}
       maxes = [max(1, 150_000, 0), max(2, 110_000, 1)]
-      assert {:ok, r} = Proxy.resolve(lot, maxes, %{user_id: 1, amount: 160_000, at: 2, kind: :max})
+
+      assert {:ok, r} =
+               Proxy.resolve(lot, maxes, %{user_id: 1, amount: 160_000, at: 2, kind: :max})
+
       assert r.price == 120_000
       assert r.entries == []
       assert r.max.amount == 160_000
@@ -109,14 +136,23 @@ defmodule Umber.Auctions.ProxyTest do
     test "raising their maximum past the reserve moves the price to the reserve" do
       lot = %{@lot | current_bid: 120_000, leader_id: 1}
       maxes = [max(1, 150_000, 0), max(2, 110_000, 1)]
-      assert {:ok, r} = Proxy.resolve(lot, maxes, %{user_id: 1, amount: 250_000, at: 2, kind: :max})
+
+      assert {:ok, r} =
+               Proxy.resolve(lot, maxes, %{user_id: 1, amount: 250_000, at: 2, kind: :max})
+
       assert r.price == 170_000
       assert r.entries == [{1, 170_000, "proxy"}]
     end
 
     test "a lower maximum than their own is refused" do
       lot = %{@lot | current_bid: 120_000, leader_id: 1}
-      assert Proxy.resolve(lot, [max(1, 150_000, 0)], %{user_id: 1, amount: 140_000, at: 2, kind: :max}) == {:error, {:not_higher, 150_000}}
+
+      assert Proxy.resolve(lot, [max(1, 150_000, 0)], %{
+               user_id: 1,
+               amount: 140_000,
+               at: 2,
+               kind: :max
+             }) == {:error, {:not_higher, 150_000}}
     end
   end
 

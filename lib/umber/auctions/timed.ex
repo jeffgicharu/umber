@@ -55,11 +55,16 @@ defmodule Umber.Auctions.Timed do
   defp check_open(%Lot{}, _now), do: {:error, :closed}
 
   defp check_bidder(%User{kind: "staff"}, _), do: {:error, :staff}
-  defp check_bidder(%User{bid_limit: limit}, amount) when amount > limit, do: {:error, {:over_limit, limit}}
+
+  defp check_bidder(%User{bid_limit: limit}, amount) when amount > limit,
+    do: {:error, {:over_limit, limit}}
+
   defp check_bidder(_, _), do: :ok
 
   defp check_amount(lot, :bid, amount) do
-    if amount == Increments.next(lot.current_bid, lot.opening_bid), do: :ok, else: {:error, :price_moved}
+    if amount == Increments.next(lot.current_bid, lot.opening_bid),
+      do: :ok,
+      else: {:error, :price_moved}
   end
 
   defp check_amount(_lot, :max, amount) do
@@ -84,7 +89,14 @@ defmodule Umber.Auctions.Timed do
     r.entries
     |> Enum.with_index()
     |> Enum.each(fn {{uid, amount, kind}, i} ->
-      Repo.insert!(%Bid{lot_id: lot.id, user_id: uid, amount: amount, kind: kind, source: "online", inserted_at: DateTime.add(now, i, :microsecond)})
+      Repo.insert!(%Bid{
+        lot_id: lot.id,
+        user_id: uid,
+        amount: amount,
+        kind: kind,
+        source: "online",
+        inserted_at: DateTime.add(now, i, :microsecond)
+      })
     end)
 
     closes = lot.closes_at

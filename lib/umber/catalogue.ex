@@ -23,7 +23,7 @@ defmodule Umber.Catalogue do
       join: s in assoc(l, :sale),
       where: w.artist_id == ^id and s.published and s.status != "draft",
       order_by: [desc: s.inserted_at, asc: l.number],
-      preload: [work: w, sale: s]
+      preload: [work: {w, :artist}, sale: s]
     )
     |> Repo.all()
     |> dedupe_by_work()
@@ -44,7 +44,10 @@ defmodule Umber.Catalogue do
 
   @doc "Finished house sales with results (running cycles are not listed)."
   def past_sales do
-    from(s in Sale, where: s.published and s.status == "closed" and is_nil(s.template), order_by: [desc: s.ended_at])
+    from(s in Sale,
+      where: s.published and s.status == "closed" and is_nil(s.template),
+      order_by: [desc: s.ended_at]
+    )
     |> Repo.all()
   end
 
@@ -63,7 +66,12 @@ defmodule Umber.Catalogue do
 
   def get_lot(%Sale{id: sale_id} = sale, number) do
     with {n, ""} <- Integer.parse(to_string(number)),
-         %Lot{} = lot <- Repo.one(from l in Lot, where: l.sale_id == ^sale_id and l.number == ^n, preload: [work: :artist, leader: [], buyer: []]) do
+         %Lot{} = lot <-
+           Repo.one(
+             from l in Lot,
+               where: l.sale_id == ^sale_id and l.number == ^n,
+               preload: [work: :artist, leader: [], buyer: []]
+           ) do
       %{lot | sale: sale}
     else
       _ -> nil
@@ -112,7 +120,14 @@ defmodule Umber.Catalogue do
       where: b.lot_id == ^id,
       order_by: [desc: b.inserted_at, desc: b.id],
       limit: ^limit,
-      select: %{amount: b.amount, kind: b.kind, source: b.source, at: b.inserted_at, paddle: u.paddle, user_id: b.user_id}
+      select: %{
+        amount: b.amount,
+        kind: b.kind,
+        source: b.source,
+        at: b.inserted_at,
+        paddle: u.paddle,
+        user_id: b.user_id
+      }
     )
     |> Repo.all()
   end
@@ -128,7 +143,9 @@ defmodule Umber.Catalogue do
     artists = read_json(dir, "artists.json")
     lots = read_json(dir, "lots.json")
     sales = read_json(dir, "sales.json")
-    images = if File.exists?(Path.join(dir, "images.json")), do: read_json(dir, "images.json"), else: %{}
+
+    images =
+      if File.exists?(Path.join(dir, "images.json")), do: read_json(dir, "images.json"), else: %{}
 
     Repo.transaction(fn ->
       artist_ids = Map.new(artists, fn a -> {a["id"], upsert_artist(a).id} end)
@@ -136,7 +153,8 @@ defmodule Umber.Catalogue do
 
       works =
         Map.new(lots, fn l ->
-          {l["file"], upsert_work(l, artist_ids[l["artist"]], categories[l["sale"]], images[l["file"]])}
+          {l["file"],
+           upsert_work(l, artist_ids[l["artist"]], categories[l["sale"]], images[l["file"]])}
         end)
 
       for s <- sales, not s["running"], do: ensure_past_sale(s, lots, works)
@@ -212,7 +230,9 @@ defmodule Umber.Catalogue do
   end
 
   defp work_slug(l) do
-    base = l["title"] |> String.downcase() |> String.replace(~r/[^a-z0-9]+/, "-") |> String.trim("-")
+    base =
+      l["title"] |> String.downcase() |> String.replace(~r/[^a-z0-9]+/, "-") |> String.trim("-")
+
     "#{base}-#{String.replace(l["file"], "lot-", "")}"
   end
 
@@ -272,6 +292,104 @@ defmodule Umber.Catalogue do
     end
   end
 
+  ## The desk
+
+  @doc "Every sale staff work with: drafts, current cycles and the house's past sales, newest first."
+  def desk_sales do
+    from(s in Sale,
+      where: s.status in ["draft", "upcoming", "open", "live"] or is_nil(s.template),
+      order_by: [desc: s.inserted_at],
+      limit: 60
+    )
+    |> Repo.all()
+  end
+
+  def works_for_picker do
+    from(w in Work,
+      join: a in assoc(w, :artist),
+      order_by: [a.name, w.title],
+      preload: [artist: a]
+    )
+    |> Repo.all()
+  end
+
+  def change_sale(%Sale{} = sale, attrs \\ %{}), do: Sale.changeset(sale, attrs)
+
+  @doc "A new draft sale, visible only on the desk until the head of sale publishes it."
+  def create_draft(attrs, %Umber.Accounts.User{} = staff) do
+    %Sale{number: next_number(), status: "draft", published: false, created_by_id: staff.id}
+    |> Sale.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def update_draft(%Sale{status: "draft"} = sale, attrs) do
+    with {:ok, sale} <- sale |> Sale.changeset(attrs) |> Repo.update() do
+      reschedule_lots(sale)
+      {:ok, sale}
+    end
+  end
+
+  def update_draft(_, _), do: {:error, :published}
+
+  defp reschedule_lots(%Sale{} = sale) do
+    for lot <- Repo.all(from l in Lot, where: l.sale_id == ^sale.id) do
+      lot
+      |> Ecto.Changeset.change(closes_at: lot_close(Map.from_struct(sale), lot.number))
+      |> Repo.update!()
+    end
+  end
+
+  @doc "Adds a work from the archive to a draft sale as the next lot."
+  def add_lot(%Sale{status: "draft"} = sale, work_id, low, high)
+      when is_integer(low) and is_integer(high) and low > 0 and high >= low do
+    number =
+      (Repo.one(from l in Lot, where: l.sale_id == ^sale.id, select: max(l.number)) || 0) + 1
+
+    %Lot{
+      sale_id: sale.id,
+      work_id: work_id,
+      number: number,
+      estimate_low: low,
+      estimate_high: high,
+      reserve: reserve(low),
+      opening_bid: opening(low),
+      market_value: market_value(low, high),
+      closes_at: lot_close(Map.from_struct(sale), number)
+    }
+    |> Repo.insert()
+  end
+
+  def add_lot(%Sale{status: "draft"}, _, _, _), do: {:error, :estimate}
+  def add_lot(_, _, _, _), do: {:error, :published}
+
+  def remove_lot(%Sale{status: "draft"} = sale, lot_id) do
+    Repo.transaction(fn ->
+      from(l in Lot, where: l.id == ^lot_id and l.sale_id == ^sale.id) |> Repo.delete_all()
+
+      from(l in Lot, where: l.sale_id == ^sale.id, order_by: l.number)
+      |> Repo.all()
+      |> Enum.with_index(1)
+      |> Enum.each(fn {l, n} ->
+        l
+        |> Ecto.Changeset.change(number: n, closes_at: lot_close(Map.from_struct(sale), n))
+        |> Repo.update!()
+      end)
+    end)
+  end
+
+  @doc "Puts a draft on the website. Only the head of sale may."
+  def publish(%Sale{status: "draft"} = sale, %Umber.Accounts.User{} = staff) do
+    lots = Repo.aggregate(from(l in Lot, where: l.sale_id == ^sale.id), :count)
+
+    cond do
+      not Umber.Accounts.User.role?(staff, "head_of_sale") -> {:error, :not_head}
+      lots == 0 -> {:error, :no_lots}
+      true -> sale |> Ecto.Changeset.change(status: "upcoming", published: true) |> Repo.update()
+    end
+  end
+
+  def publish(_, _), do: {:error, :published}
+
   ## Running sales: each cycle is a new sale with the template's works
 
   @doc "The next sale number."
@@ -285,7 +403,11 @@ defmodule Umber.Catalogue do
   a live one.
   """
   def create_cycle(template, times) do
-    works = from(w in Work, where: w.image in ^Enum.map(template["lots"], & &1["file"])) |> Repo.all() |> Map.new(&{&1.image, &1})
+    works =
+      from(w in Work, where: w.image in ^Enum.map(template["lots"], & &1["file"]))
+      |> Repo.all()
+      |> Map.new(&{&1.image, &1})
+
     now = DateTime.utc_now()
 
     Repo.transaction(fn ->
@@ -327,7 +449,9 @@ defmodule Umber.Catalogue do
     end)
   end
 
-  defp lot_close(%{first_close_at: %DateTime{} = first, lot_interval: i}, n), do: DateTime.add(first, (n - 1) * i, :second)
+  defp lot_close(%{first_close_at: %DateTime{} = first, lot_interval: i}, n),
+    do: DateTime.add(first, (n - 1) * i, :second)
+
   defp lot_close(_, _), do: nil
 
   @doc "The reserve: a little under the low estimate, on the step grid."

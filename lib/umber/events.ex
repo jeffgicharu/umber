@@ -29,7 +29,10 @@ defmodule Umber.Events do
   def broadcast_many([]), do: :ok
 
   def broadcast_many(pairs) do
-    Enum.each(pairs, fn {topic, message} -> Phoenix.PubSub.broadcast(Umber.PubSub, topic, message) end)
+    Enum.each(pairs, fn {topic, message} ->
+      Phoenix.PubSub.broadcast(Umber.PubSub, topic, message)
+    end)
+
     notify_many(pairs)
     :ok
   end
@@ -40,7 +43,9 @@ defmodule Umber.Events do
 
     with {:ok, bin} <- Base.decode64(payload),
          {origin, pairs} when origin != me <- :erlang.binary_to_term(bin, [:safe]) do
-      Enum.each(pairs, fn {topic, message} -> Phoenix.PubSub.local_broadcast(Umber.PubSub, topic, message) end)
+      Enum.each(pairs, fn {topic, message} ->
+        Phoenix.PubSub.local_broadcast(Umber.PubSub, topic, message)
+      end)
     end
 
     :ok
@@ -66,7 +71,8 @@ defmodule Umber.Events do
   defp notify_many(pairs) do
     payload = {origin(), pairs} |> :erlang.term_to_binary() |> Base.encode64()
 
-    if byte_size(payload) <= @max_payload and Application.get_env(:umber, :cross_node_events, true) do
+    if byte_size(payload) <= @max_payload and
+         Application.get_env(:umber, :cross_node_events, true) do
       # Callers broadcast after their change is committed, so this is never
       # inside a transaction that could still roll back.
       Umber.Repo.query("SELECT pg_notify($1, $2)", [@channel, payload])

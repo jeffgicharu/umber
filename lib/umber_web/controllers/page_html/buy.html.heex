@@ -1,0 +1,107 @@
+<Layouts.app flash={@flash} current_user={@current_user} active={:buy}>
+  <header class="page-head wrap">
+    <p class="label">Buying</p>
+    <h1>How to buy at Umber</h1>
+    <p class="page-lede">
+      Every lot is sold to the highest bidder, in the room, by telephone or online. Here is how bidding works, what you pay and how you collect.
+    </p>
+  </header>
+
+  <div class="wrap steps">
+    <section class="step">
+      <span class="step-no serif num" aria-hidden="true">1</span>
+      <div>
+        <h2>Register and get your paddle</h2>
+        <p>
+          Registering takes a minute: your name, an email to sign in with, a password and your country. You get a paddle number that identifies you in every sale, and a bidding limit of KES 1,500,000 a lot. If you want to bid higher, ask for a higher limit from your account and our client services team will look at it, usually the same day.
+        </p>
+        <a class="text-link" href={~p"/register"}>Register to bid
+        <span class="arrow" aria-hidden="true">→</span></a>
+      </div>
+    </section>
+
+    <section class="step">
+      <span class="step-no serif num" aria-hidden="true">2</span>
+      <div>
+        <h2>Bid in an online sale</h2>
+        <p>
+          Our online sales close lot by lot, one every two minutes. On a lot's page you can bid the next amount with one tap, or leave a maximum and let us bid for you: we bid one step at a time, only as high as needed to keep you in the lead, and never above your maximum. If two maximums are the same, the one left first leads.
+        </p>
+        <p>
+          A bid in the last two minutes of a lot gives that lot two more, so nobody is beaten by a bid in the final second. The clock on the page runs from our server's time, so everyone sees the same second.
+        </p>
+      </div>
+    </section>
+
+    <section class="step">
+      <span class="step-no serif num" aria-hidden="true">3</span>
+      <div>
+        <h2>Bid in a live sale</h2>
+        <p>
+          In a live sale the auctioneer takes each lot in turn, starting below the low estimate and rising one step at a time. Open the saleroom on your phone or computer and you see the lot on the block, the asking price and the bid in hand. One tap bids the asking price. If someone bids first, the price moves and we tell you before your bid counts.
+        </p>
+        <p>
+          Can't be there? Leave an absentee maximum on any lot before the sale starts, and the auctioneer will bid for you from the book.
+        </p>
+      </div>
+    </section>
+
+    <section class="step">
+      <span class="step-no serif num" aria-hidden="true">4</span>
+      <div>
+        <h2>Pay and collect</h2>
+        <p>
+          If you win, your invoice is in your account at once. You pay the hammer price, a buyer's premium of {Invoice.premium_rate()}% of the hammer price, and VAT of {Invoice.vat_rate()}% on the premium. Payment is due within seven days, by bank transfer or at Umber House. Collect from Umber House, or ask us to arrange delivery anywhere in Kenya and beyond.
+        </p>
+        <div class="example">
+          <p class="label">For a hammer price of KES 500,000</p>
+          <dl>
+            <div>
+              <dt>Hammer price</dt><dd class="num">{Format.money(example().hammer)}</dd>
+            </div>
+            <div>
+              <dt>Buyer's premium, {Invoice.premium_rate()}%</dt><dd class="num">
+                {Format.money(example().premium)}
+              </dd>
+            </div>
+            <div>
+              <dt>VAT on the premium, {Invoice.vat_rate()}%</dt><dd class="num">
+                {Format.money(example().vat)}
+              </dd>
+            </div>
+            <div class="total">
+              <dt>You pay</dt><dd class="num">{Format.money(example().total)}</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+    </section>
+
+    <section class="step">
+      <span class="step-no serif num" aria-hidden="true">5</span>
+      <div>
+        <h2>The bidding steps</h2>
+        <p>Every bid is the current bid plus one step. The step grows with the price.</p>
+        <div class="table-scroll">
+          <table class="table steps-table">
+            <thead>
+              <tr>
+                <th>Current bid (KES)</th><th class="num">Next step (KES)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr :for={{from, below, step} <- increments()}>
+                <td class="num">
+                  {if below,
+                    do: "#{Format.thousands(from)} to #{Format.thousands(below - 1)}",
+                    else: "#{Format.thousands(from)} and above"}
+                </td>
+                <td class="num">{Format.thousands(step)}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </div>
+</Layouts.app>

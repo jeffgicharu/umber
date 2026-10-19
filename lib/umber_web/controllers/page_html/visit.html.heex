@@ -1,0 +1,47 @@
+<Layouts.app flash={@flash} current_user={@current_user} active={:visit}>
+  <header class="page-head wrap">
+    <p class="label">Visit</p>
+    <h1>Umber House, Lenana Road</h1>
+    <p class="page-lede">
+      Every lot can be seen before it is sold. Come to a viewing, ask a specialist to take a work off the wall, or sit in on a live sale.
+    </p>
+  </header>
+  <div class="wrap split">
+    <div class="split-image">
+      <.photo
+        name="photo-house"
+        alt="Umber House: a single-storey 1960s house with a deep concrete roof and a breeze-block screen, in a garden."
+      />
+    </div>
+    <div class="split-text">
+      <dl class="visit-list">
+        <div>
+          <dt class="label">Address</dt>
+          <dd>Umber House, Lenana Road, Kilimani, Nairobi</dd>
+        </div>
+        <div>
+          <dt class="label">Viewing</dt>
+          <dd>Tuesday to Sunday, 10:00 to 18:00. Closed on Mondays and public holidays.</dd>
+        </div>
+        <div>
+          <dt class="label">Live sales</dt>
+          <dd>
+            Sessions at a quarter past and a quarter to every hour during opening times. Seats in the room are first come, first served.
+          </dd>
+        </div>
+        <div>
+          <dt class="label">Parking</dt>
+          <dd>In the drive and on Lenana Road. Ask at the gate.</dd>
+        </div>
+        <div>
+          <dt class="label">The specialists</dt>
+          <dd>
+            For a condition report, a viewing by appointment or advice on selling, come in during viewing hours, or send us the work through <a href={
+              ~p"/sell"
+            }>Sell with us</a>.
+          </dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+</Layouts.app>

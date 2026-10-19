@@ -1,0 +1,420 @@
+/* Page heads */
+
+.page-head {
+  padding-block: clamp(32px, 6vw, 80px) clamp(28px, 4vw, 48px);
+}
+
+.page-head h1 {
+  margin-top: 12px;
+  font-size: var(--d-2);
+  max-width: 18ch;
+}
+
+.page-lede {
+  max-width: 60ch;
+  margin-top: 18px;
+  font-size: var(--t-md);
+  color: var(--ink-2);
+}
+
+.section-tight {
+  padding-block: clamp(24px, 4vw, 56px);
+}
+
+/* A sale's head: the catalogue cover */
+
+.sale-head {
+  margin-top: 20px;
+  border-block: 1px solid var(--ink);
+}
+
+.sale-head-inner {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: clamp(20px, 4vw, 64px);
+  align-items: start;
+  padding-block: clamp(28px, 4vw, 56px);
+}
+
+.sale-head-number {
+  display: grid;
+  gap: 4px;
+}
+
+.sale-head-number .num {
+  font-size: clamp(3.5rem, 2rem + 6vw, 8rem);
+  font-variation-settings: "opsz" 18;
+  line-height: 0.82;
+  letter-spacing: -0.04em;
+}
+
+.sale-head-text .label {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.sale-head-text h1 {
+  margin-top: 14px;
+  font-size: var(--d-2);
+  max-width: 16ch;
+}
+
+.sale-when {
+  margin-top: 14px;
+  font-weight: 600;
+}
+
+.sale-desc {
+  max-width: 62ch;
+  margin-top: 12px;
+  color: var(--ink-2);
+}
+
+.sale-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.sale-actions .btn .live-dot {
+  margin-right: 2px;
+}
+
+.sale-facts {
+  display: grid;
+  gap: 18px;
+  margin: 0;
+  min-width: 150px;
+}
+
+.sale-facts dd {
+  margin: 2px 0 0;
+  font-size: clamp(2rem, 1.4rem + 1.6vw, 2.75rem);
+  line-height: 1;
+}
+
+.sale-head.is-live {
+  background: var(--night);
+  color: var(--night-ink);
+  border-color: var(--night);
+}
+
+.sale-head.is-live .label,
+.sale-head.is-live .sale-desc {
+  color: var(--night-ink-2);
+}
+
+.sale-head.is-live .btn {
+  background: var(--brass);
+  border-color: var(--brass);
+  color: var(--night);
+}
+
+.sale-head.is-live .btn.ghost {
+  background: transparent;
+  color: var(--night-ink);
+  border-color: var(--night-rule);
+}
+
+@media (max-width: 900px) {
+  .sale-head-inner {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sale-head-number {
+    grid-auto-flow: column;
+    justify-content: start;
+    align-items: baseline;
+    gap: 12px;
+  }
+
+  .sale-facts {
+    grid-auto-flow: column;
+    justify-content: start;
+    gap: 32px;
+  }
+}
+
+/* The toolbar above a catalogue */
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 14px 18px;
+  padding-block: 28px;
+  margin-bottom: clamp(16px, 3vw, 32px);
+  border-bottom: 1px solid var(--rule);
+}
+
+.toolbar .field {
+  min-width: min(100%, 240px);
+}
+
+.toolbar .field + .field {
+  margin-top: 0;
+}
+
+.toolbar .field label {
+  font-size: var(--t-xs);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+
+.view-toggle {
+  display: inline-flex;
+  border: 1px solid var(--rule-strong);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.view-toggle a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 46px;
+  padding: 0 16px;
+  font-size: var(--t-sm);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.view-toggle a[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.toolbar-count {
+  margin-left: auto;
+  padding-bottom: 12px;
+  font-size: var(--t-sm);
+}
+
+@media (max-width: 640px) {
+  .toolbar .field {
+    flex: 1 1 100%;
+  }
+
+  .toolbar-count {
+    margin-left: 0;
+    padding-bottom: 0;
+  }
+}
+
+/* The list view */
+
+.lot-table td {
+  vertical-align: middle;
+}
+
+.lot-table-no {
+  font-size: 1.75rem;
+  width: 3ch;
+}
+
+.lot-table-work {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+}
+
+.lot-table-work em {
+  font-size: 1.05rem;
+}
+
+.lot-table-thumb .work-image {
+  width: 56px;
+  max-height: 70px;
+  flex: none;
+}
+
+/* Sales calendar rows */
+
+.sale-rows {
+  display: grid;
+  gap: 0;
+  border-top: 1px solid var(--rule);
+}
+
+.sale-row {
+  display: grid;
+  grid-template-columns: 7ch minmax(0, 1fr) auto;
+  gap: 24px;
+  align-items: center;
+  padding: 22px 0;
+  border-bottom: 1px solid var(--rule);
+  text-decoration: none;
+  transition: background 0.3s;
+}
+
+.sale-row:hover {
+  background: rgb(22 18 14 / 0.025);
+}
+
+.sale-row-number {
+  font-size: 2rem;
+  color: var(--ink-3);
+}
+
+.sale-row-main {
+  display: grid;
+  gap: 6px;
+  justify-items: start;
+}
+
+.sale-row-title {
+  font-size: var(--t-xl);
+  line-height: 1.15;
+}
+
+.sale-row-when {
+  color: var(--ink-2);
+  font-size: var(--t-sm);
+}
+
+.sale-row-side {
+  display: grid;
+  gap: 6px;
+  justify-items: end;
+  text-align: right;
+}
+
+.sale-row.is-live {
+  padding-inline: 20px;
+  margin-inline: -20px;
+  background: var(--night);
+  color: var(--night-ink);
+}
+
+.sale-row.is-live .sale-row-when,
+.sale-row.is-live .sale-row-number,
+.sale-row.is-live .label {
+  color: var(--night-ink-2);
+}
+
+@media (max-width: 720px) {
+  .sale-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .sale-row-side {
+    justify-items: start;
+    text-align: left;
+  }
+
+  .sale-row.is-live {
+    margin-inline: 0;
+    padding-inline: 16px;
+  }
+}
+
+/* Results */
+
+.result-totals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  font-size: var(--t-sm);
+  color: var(--ink-2);
+}
+
+.result-totals .serif {
+  font-size: var(--t-xl);
+  color: var(--ink);
+}
+
+.result-table .hammer {
+  font-family: var(--serif);
+  font-size: 1.15rem;
+}
+
+.result-table .hammer.above::after {
+  content: " ▲";
+  font-size: 0.65em;
+  color: var(--verdigris);
+  vertical-align: 0.2em;
+}
+
+/* Artists */
+
+.artist-index {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+  gap: 40px clamp(24px, 4vw, 56px);
+}
+
+.artist-group h2 {
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--ink);
+}
+
+.artist-group ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.artist-group li a {
+  display: grid;
+  gap: 2px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--rule);
+  text-decoration: none;
+}
+
+.artist-group li a:hover .artist-name {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+}
+
+.artist-name {
+  font-size: var(--t-xl);
+  line-height: 1.15;
+}
+
+.artist-group .muted {
+  font-size: var(--t-sm);
+}
+
+.artist-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  gap: clamp(24px, 5vw, 80px);
+  align-items: end;
+  padding-block: clamp(28px, 5vw, 64px);
+  /* The rule stops at the content edges, like every section rule. */
+  background: linear-gradient(var(--ink), var(--ink)) bottom center / calc(100% - 2 * var(--gutter)) 1px no-repeat;
+  margin-bottom: clamp(16px, 3vw, 32px);
+}
+
+.artist-head h1 {
+  margin-top: 12px;
+  font-size: var(--d-1);
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+}
+
+.artist-dates {
+  margin-top: 10px;
+  font-size: var(--t-xl);
+  color: var(--ink-2);
+}
+
+.artist-bio {
+  font-size: var(--t-md);
+  line-height: 1.65;
+  color: var(--ink-2);
+  max-width: 58ch;
+}
+
+@media (max-width: 900px) {
+  .artist-head {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

@@ -48,8 +48,12 @@ defmodule Umber.Accounts.User do
     |> validate_password()
     |> validate_required([:country], message: "Choose your country")
     |> validate_length(:country, max: 60)
-    |> validate_format(:phone, ~r/^\+?[0-9 ()-]{7,20}$/, message: "Enter a phone number like +254 712 345 678")
-    |> validate_acceptance(:accept_conditions, message: "Accept the conditions of sale to register")
+    |> validate_format(:phone, ~r/^\+?[0-9 ()-]{7,20}$/,
+      message: "Enter a phone number like +254 712 345 678"
+    )
+    |> validate_acceptance(:accept_conditions,
+      message: "Accept the conditions of sale to register"
+    )
     |> hash_password()
   end
 
@@ -57,9 +61,13 @@ defmodule Umber.Accounts.User do
     cs
     |> update_change(:email, &(&1 |> String.trim() |> String.downcase()))
     |> validate_required([:email], message: "Enter your email address")
-    |> validate_format(:email, ~r/^[^@,;\s]+@[^@,;\s]+\.[^@,;\s]+$/, message: "Enter an email address like name@example.com")
+    |> validate_format(:email, ~r/^[^@,;\s]+@[^@,;\s]+\.[^@,;\s]+$/,
+      message: "Enter an email address like name@example.com"
+    )
     |> validate_length(:email, max: 160)
-    |> unsafe_validate_unique(:email, Umber.Repo, message: "An account already uses this email. Sign in instead.")
+    |> unsafe_validate_unique(:email, Umber.Repo,
+      message: "An account already uses this email. Sign in instead."
+    )
     |> unique_constraint(:email, message: "An account already uses this email. Sign in instead.")
   end
 
@@ -93,5 +101,7 @@ defmodule Umber.Accounts.User do
   end
 
   defp squish(nil), do: nil
-  defp squish(s), do: s |> String.split() |> Enum.join(" ") |> then(&if(&1 == "", do: nil, else: &1))
+
+  defp squish(s),
+    do: s |> String.split() |> Enum.join(" ") |> then(&if(&1 == "", do: nil, else: &1))
 end

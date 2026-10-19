@@ -101,7 +101,8 @@ defmodule Umber.Auctions.LotServer do
       else: {:noreply, state}
   end
 
-  def handle_info({:lot, %{id: id, status: status}}, %{lot_id: id} = state) when status != "open" do
+  def handle_info({:lot, %{id: id, status: status}}, %{lot_id: id} = state)
+      when status != "open" do
     {:stop, :normal, state}
   end
 

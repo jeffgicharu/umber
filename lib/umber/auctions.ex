@@ -48,12 +48,19 @@ defmodule Umber.Auctions do
 
   # The leader before this bid: the user of the second-newest bid on the lot.
   defp previous_leader(lot, uid) do
-    from(b in Umber.Auctions.Bid, where: b.lot_id == ^lot.id, order_by: [desc: b.inserted_at, desc: b.id], offset: 1, limit: 1, select: b.user_id)
+    from(b in Umber.Auctions.Bid,
+      where: b.lot_id == ^lot.id,
+      order_by: [desc: b.inserted_at, desc: b.id],
+      offset: 1,
+      limit: 1,
+      select: b.user_id
+    )
     |> Repo.one()
     |> then(&if(&1 == uid, do: nil, else: &1))
   end
 
-  def leave_absentee(%Lot{} = lot, %User{} = user, amount), do: Live.leave_absentee(lot, user, amount)
+  def leave_absentee(%Lot{} = lot, %User{} = user, amount),
+    do: Live.leave_absentee(lot, user, amount)
 
   ## Rostrum
 
@@ -62,16 +69,35 @@ defmodule Umber.Auctions do
     if User.role?(staff, "auctioneer") do
       result =
         case command do
-          :take -> Live.take_rostrum(sale_id, staff)
-          :leave -> Live.leave_rostrum(sale_id, staff)
-          {:open, lot_id, asking} -> with_held(sale_id, staff, fn -> Live.open_lot(sale_id, lot_id, asking) end)
-          {:asking, amount} -> with_held(sale_id, staff, fn -> Live.set_asking(sale_id, amount) end)
-          {:floor, paddle} -> with_held(sale_id, staff, fn -> floor(sale_id, paddle) end)
-          :book -> with_held(sale_id, staff, fn -> Live.book_bid(sale_id) end)
-          :warn -> with_held(sale_id, staff, fn -> Live.warn(sale_id) end)
-          :hammer -> with_held(sale_id, staff, fn -> Live.hammer(sale_id) end)
-          :pause -> with_held(sale_id, staff, fn -> Live.pause(sale_id) end)
-          :resume -> with_held(sale_id, staff, fn -> Live.resume(sale_id) end)
+          :take ->
+            Live.take_rostrum(sale_id, staff)
+
+          :leave ->
+            Live.leave_rostrum(sale_id, staff)
+
+          {:open, lot_id, asking} ->
+            with_held(sale_id, staff, fn -> Live.open_lot(sale_id, lot_id, asking) end)
+
+          {:asking, amount} ->
+            with_held(sale_id, staff, fn -> Live.set_asking(sale_id, amount) end)
+
+          {:floor, paddle} ->
+            with_held(sale_id, staff, fn -> floor(sale_id, paddle) end)
+
+          :book ->
+            with_held(sale_id, staff, fn -> Live.book_bid(sale_id) end)
+
+          :warn ->
+            with_held(sale_id, staff, fn -> Live.warn(sale_id) end)
+
+          :hammer ->
+            with_held(sale_id, staff, fn -> Live.hammer(sale_id) end)
+
+          :pause ->
+            with_held(sale_id, staff, fn -> Live.pause(sale_id) end)
+
+          :resume ->
+            with_held(sale_id, staff, fn -> Live.resume(sale_id) end)
         end
 
       announce(result)
@@ -92,8 +118,17 @@ defmodule Umber.Auctions do
   defp floor(sale_id, paddle) do
     bidder =
       case paddle do
-        p when is_integer(p) -> Repo.one(from u in User, where: u.paddle == ^p and u.kind != "staff", select: u.id)
-        _ -> Repo.one(from u in User, where: u.kind == "sample", order_by: fragment("random()"), limit: 1, select: u.id)
+        p when is_integer(p) ->
+          Repo.one(from u in User, where: u.paddle == ^p and u.kind != "staff", select: u.id)
+
+        _ ->
+          Repo.one(
+            from u in User,
+              where: u.kind == "sample",
+              order_by: fragment("random()"),
+              limit: 1,
+              select: u.id
+          )
       end
 
     if bidder, do: Live.floor_bid(sale_id, bidder), else: {:error, :unknown_paddle}
@@ -103,9 +138,15 @@ defmodule Umber.Auctions do
     Broadcasts.live(s)
 
     cond do
-      result -> Broadcasts.live_lot(result.lot) && Broadcasts.won(result)
-      s.lot_id -> Broadcasts.live_lot(Repo.get!(Lot, s.lot_id))
-      true -> :ok
+      result ->
+        Broadcasts.live_lot(result.lot)
+        Broadcasts.won(result)
+
+      s.lot_id ->
+        Broadcasts.live_lot(Repo.get!(Lot, s.lot_id))
+
+      true ->
+        :ok
     end
   end
 
@@ -113,11 +154,16 @@ defmodule Umber.Auctions do
 
   ## Watching
 
-  def watching?(%User{id: uid}, %Lot{id: lid}), do: Repo.exists?(from w in "watches", where: w.user_id == ^uid and w.lot_id == ^lid)
+  def watching?(%User{id: uid}, %Lot{id: lid}),
+    do: Repo.exists?(from w in "watches", where: w.user_id == ^uid and w.lot_id == ^lid)
+
   def watching?(_, _), do: false
 
   def watch(%User{id: uid}, %Lot{id: lid}) do
-    Repo.insert_all("watches", [%{user_id: uid, lot_id: lid, inserted_at: DateTime.utc_now()}], on_conflict: :nothing)
+    Repo.insert_all("watches", [%{user_id: uid, lot_id: lid, inserted_at: DateTime.utc_now()}],
+      on_conflict: :nothing
+    )
+
     :ok
   end
 
@@ -126,7 +172,12 @@ defmodule Umber.Auctions do
     :ok
   end
 
-  def watched_ids(%User{id: uid}), do: from(w in "watches", where: w.user_id == ^uid, select: w.lot_id) |> Repo.all() |> MapSet.new()
+  def watched_ids(%User{id: uid}),
+    do:
+      from(w in "watches", where: w.user_id == ^uid, select: w.lot_id)
+      |> Repo.all()
+      |> MapSet.new()
+
   def watched_ids(_), do: MapSet.new()
 
   def watchlist(%User{id: uid}) do
@@ -147,8 +198,9 @@ defmodule Umber.Auctions do
     from(l in Lot,
       join: s in assoc(l, :sale),
       where: l.status in ["open", "pending"],
-      where: l.id in subquery(from b in Umber.Auctions.Bid, where: b.user_id == ^uid, select: b.lot_id) or
-               l.id in subquery(from m in MaxBid, where: m.user_id == ^uid, select: m.lot_id),
+      where:
+        l.id in subquery(from b in Umber.Auctions.Bid, where: b.user_id == ^uid, select: b.lot_id) or
+          l.id in subquery(from m in MaxBid, where: m.user_id == ^uid, select: m.lot_id),
       order_by: [asc: l.closes_at],
       preload: [sale: s, work: :artist]
     )
@@ -160,7 +212,8 @@ defmodule Umber.Auctions do
     from(l in Lot,
       join: s in assoc(l, :sale),
       where: l.status in ["sold", "unsold"],
-      where: l.id in subquery(from b in Umber.Auctions.Bid, where: b.user_id == ^uid, select: b.lot_id),
+      where:
+        l.id in subquery(from b in Umber.Auctions.Bid, where: b.user_id == ^uid, select: b.lot_id),
       order_by: [desc: l.closed_at],
       limit: ^limit,
       preload: [sale: s, work: :artist]
@@ -169,12 +222,20 @@ defmodule Umber.Auctions do
   end
 
   def invoices(%User{id: uid}) do
-    from(i in Invoice, where: i.user_id == ^uid, order_by: [desc: i.inserted_at], preload: [lot: [sale: [], work: :artist]])
+    from(i in Invoice,
+      where: i.user_id == ^uid,
+      order_by: [desc: i.inserted_at],
+      preload: [lot: [sale: [], work: :artist]]
+    )
     |> Repo.all()
   end
 
   def get_invoice(%User{} = user, number) do
-    query = from(i in Invoice, where: i.number == ^number, preload: [:user, :paid_by, lot: [sale: [], work: :artist]])
+    query =
+      from(i in Invoice,
+        where: i.number == ^number,
+        preload: [:user, :paid_by, lot: [sale: [], work: :artist]]
+      )
 
     case Repo.one(query) do
       %Invoice{user_id: uid} = inv when uid == user.id -> inv

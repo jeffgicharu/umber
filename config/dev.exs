@@ -32,8 +32,13 @@ config :umber, UmberWeb.Endpoint,
 # Enable dev routes for the dashboard
 config :umber, dev_routes: true
 
-# Do not include metadata nor timestamps in development logs
+# The guest staff link for trying the desk locally: /desk/try?key=local-desk
+config :umber, :staff_trial_key, "local-desk"
+
+# Do not include metadata nor timestamps in development logs, and leave out
+# every query: the market runs a few each second.
 config :logger, :default_formatter, format: "[$level] $message\n"
+config :logger, level: :info
 
 # Set a higher stacktrace during development. Avoid configuring such
 # in production as building large stacktraces may be expensive.

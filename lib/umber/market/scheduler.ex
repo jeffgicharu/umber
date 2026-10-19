@@ -62,7 +62,10 @@ defmodule Umber.Market.Scheduler do
           end
 
         "timed" ->
-          active? = Repo.exists?(from s in Sale, where: s.template == ^key and s.status in ["upcoming", "open"])
+          active? =
+            Repo.exists?(
+              from s in Sale, where: s.template == ^key and s.status in ["upcoming", "open"]
+            )
 
           unless active? do
             {:ok, sale} = Catalogue.create_cycle(t, Schedule.next_timed(key, now))
@@ -76,12 +79,19 @@ defmodule Umber.Market.Scheduler do
   end
 
   defp open_due_sales(now) do
-    due = from(s in Sale, where: s.format == "timed" and s.status == "upcoming" and s.opens_at <= ^now) |> Repo.all()
+    due =
+      from(s in Sale,
+        where: s.format == "timed" and s.status == "upcoming" and s.opens_at <= ^now
+      )
+      |> Repo.all()
 
     for sale <- due do
       Repo.transaction(fn ->
-        from(l in Lot, where: l.sale_id == ^sale.id and l.status == "pending") |> Repo.update_all(set: [status: "open", updated_at: now], inc: [version: 1])
-        from(s in Sale, where: s.id == ^sale.id) |> Repo.update_all(set: [status: "open", updated_at: now])
+        from(l in Lot, where: l.sale_id == ^sale.id and l.status == "pending")
+        |> Repo.update_all(set: [status: "open", updated_at: now], inc: [version: 1])
+
+        from(s in Sale, where: s.id == ^sale.id)
+        |> Repo.update_all(set: [status: "open", updated_at: now])
       end)
 
       Logger.info("opened sale #{sale.number}")
@@ -91,26 +101,43 @@ defmodule Umber.Market.Scheduler do
   end
 
   defp tend_open_lots do
-    from(l in Lot, join: s in assoc(l, :sale), where: l.status == "open" and s.format == "timed", select: l.id)
+    from(l in Lot,
+      join: s in assoc(l, :sale),
+      where: l.status == "open" and s.format == "timed",
+      select: l.id
+    )
     |> Repo.all()
     |> Enum.each(fn id -> unless LotServer.running?(id), do: LotServer.ensure(id) end)
   end
 
   defp start_live_sessions(now) do
-    due = from(s in Sale, where: s.format == "live" and s.status == "upcoming" and s.starts_at <= ^now) |> Repo.all()
+    due =
+      from(s in Sale,
+        where: s.format == "live" and s.status == "upcoming" and s.starts_at <= ^now
+      )
+      |> Repo.all()
 
     for sale <- due do
-      from(s in Sale, where: s.id == ^sale.id) |> Repo.update_all(set: [status: "live", updated_at: now])
+      from(s in Sale, where: s.id == ^sale.id)
+      |> Repo.update_all(set: [status: "live", updated_at: now])
+
       Events.broadcast("sale:#{sale.id}", :sale_changed)
       Events.broadcast("market", :sales_changed)
     end
 
-    live = from(s in Sale, where: s.format == "live" and s.status == "live", select: s.id) |> Repo.all()
+    live =
+      from(s in Sale, where: s.format == "live" and s.status == "live", select: s.id)
+      |> Repo.all()
+
     Enum.each(live, &Auctioneer.ensure/1)
   end
 
   defp close_finished_sales(now) do
-    unfinished = from(l in Lot, where: l.sale_id == parent_as(:sale).id and l.status in ["pending", "open"], select: 1)
+    unfinished =
+      from(l in Lot,
+        where: l.sale_id == parent_as(:sale).id and l.status in ["pending", "open"],
+        select: 1
+      )
 
     finished =
       from(s in Sale,
@@ -121,7 +148,9 @@ defmodule Umber.Market.Scheduler do
       )
 
     for id <- Repo.all(finished) do
-      from(s in Sale, where: s.id == ^id) |> Repo.update_all(set: [status: "closed", ended_at: now, updated_at: now])
+      from(s in Sale, where: s.id == ^id)
+      |> Repo.update_all(set: [status: "closed", ended_at: now, updated_at: now])
+
       Events.broadcast("sale:#{id}", :sale_changed)
       Events.broadcast("market", :sales_changed)
     end
@@ -146,8 +175,14 @@ defmodule Umber.Market.Scheduler do
     end
 
     # Forget lots that have closed, so the set stays small.
-    open_ids = from(l in Lot, where: l.status == "open", select: l.id) |> Repo.all() |> MapSet.new()
-    noticed = state.noticed |> MapSet.union(MapSet.new(rows)) |> MapSet.filter(fn {_, lot_id} -> lot_id in open_ids end)
+    open_ids =
+      from(l in Lot, where: l.status == "open", select: l.id) |> Repo.all() |> MapSet.new()
+
+    noticed =
+      state.noticed
+      |> MapSet.union(MapSet.new(rows))
+      |> MapSet.filter(fn {_, lot_id} -> lot_id in open_ids end)
+
     %{state | noticed: noticed}
   end
 end

@@ -34,7 +34,7 @@ defmodule Umber.Auctions.Proxy do
       leading? and new.kind == :bid ->
         {:error, :already_leading}
 
-      leading? and own && new.amount <= own.amount ->
+      (leading? and own) && new.amount <= own.amount ->
         {:error, {:not_higher, own.amount}}
 
       not leading? and new.amount < next ->
@@ -92,7 +92,11 @@ defmodule Umber.Auctions.Proxy do
       # The new bidder takes the lead. The leader before them is shown going
       # to their maximum first, if they had one above the price.
       top.user_id == new.user_id ->
-        before = if second && second.amount > (lot.current_bid || 0), do: [{second.user_id, second.amount, "proxy"}], else: []
+        before =
+          if second && second.amount > (lot.current_bid || 0),
+            do: [{second.user_id, second.amount, "proxy"}],
+            else: []
+
         before ++ [{new.user_id, price, kind}]
 
       # The leader's maximum answers the new bid.

@@ -23,7 +23,9 @@ defmodule Umber.Format do
   @doc "A short form for tight spaces: KES 1.4M, KES 900K"
   def short_money(n) when n >= 1_000_000 do
     v = n / 1_000_000
-    "KES " <> trim(:erlang.float_to_binary(v, decimals: if(rem(n, 100_000) == 0, do: 1, else: 2))) <> "M"
+
+    "KES " <>
+      trim(:erlang.float_to_binary(v, decimals: if(rem(n, 100_000) == 0, do: 1, else: 2))) <> "M"
   end
 
   def short_money(n) when n >= 1_000, do: "KES #{div(n, 1000)}K"
@@ -32,7 +34,10 @@ defmodule Umber.Format do
   defp trim(s), do: s |> String.trim_trailing("0") |> String.trim_trailing(".")
 
   @doc "East Africa Time (UTC+3, no daylight saving)."
-  def eat(%DateTime{} = dt), do: DateTime.add(dt, @tz_offset, :second) |> Map.merge(%{time_zone: "Africa/Nairobi", zone_abbr: "EAT", utc_offset: @tz_offset})
+  def eat(%DateTime{} = dt),
+    do:
+      DateTime.add(dt, @tz_offset, :second)
+      |> Map.merge(%{time_zone: "Africa/Nairobi", zone_abbr: "EAT", utc_offset: @tz_offset})
 
   @doc "14:30"
   def clock(%DateTime{} = dt) do
@@ -73,10 +78,19 @@ defmodule Umber.Format do
 
   defp pad(n), do: n |> Integer.to_string() |> String.pad_leading(2, "0")
 
-  defp weekday(d), do: Enum.at(~w(Monday Tuesday Wednesday Thursday Friday Saturday Sunday), Date.day_of_week(d) - 1)
+  defp weekday(d),
+    do:
+      Enum.at(
+        ~w(Monday Tuesday Wednesday Thursday Friday Saturday Sunday),
+        Date.day_of_week(d) - 1
+      )
 
   defp month(m),
-    do: Enum.at(~w(January February March April May June July August September October November December), m - 1)
+    do:
+      Enum.at(
+        ~w(January February March April May June July August September October November December),
+        m - 1
+      )
 
   @doc "1 lot, 12 lots"
   def count(1, singular, _plural), do: "1 #{singular}"

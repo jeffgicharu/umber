@@ -19,7 +19,8 @@ defmodule Umber.Auctions.Live do
   def ensure(sale_id) do
     now = DateTime.utc_now()
 
-    Repo.insert!(%LiveSession{sale_id: sale_id, state: "waiting", inserted_at: now, updated_at: now},
+    Repo.insert!(
+      %LiveSession{sale_id: sale_id, state: "waiting", inserted_at: now, updated_at: now},
       on_conflict: :nothing,
       conflict_target: :sale_id
     )
@@ -34,11 +35,21 @@ defmodule Umber.Auctions.Live do
       now = DateTime.utc_now()
 
       cond do
-        user.kind == "staff" -> Repo.rollback(:staff)
-        lot.status != "pending" -> Repo.rollback(:closed)
-        amount > user.bid_limit -> Repo.rollback({:over_limit, user.bid_limit})
-        amount < lot.opening_bid -> Repo.rollback({:too_low, lot.opening_bid})
-        Increments.round_down(amount) != amount -> Repo.rollback(:off_step)
+        user.kind == "staff" ->
+          Repo.rollback(:staff)
+
+        lot.status != "pending" ->
+          Repo.rollback(:closed)
+
+        amount > user.bid_limit ->
+          Repo.rollback({:over_limit, user.bid_limit})
+
+        amount < lot.opening_bid ->
+          Repo.rollback({:too_low, lot.opening_bid})
+
+        Increments.round_down(amount) != amount ->
+          Repo.rollback(:off_step)
+
         true ->
           Repo.insert!(%MaxBid{lot_id: lot.id, user_id: user.id, amount: amount},
             on_conflict: [set: [amount: amount, updated_at: now]],
@@ -53,14 +64,19 @@ defmodule Umber.Auctions.Live do
   @doc "Puts a lot on the block at an opening asking price."
   def open_lot(sale_id, lot_id, asking, now \\ nil) do
     change(sale_id, now, fn session, now ->
-      lot = from(l in Lot, where: l.id == ^lot_id and l.sale_id == ^sale_id, lock: "FOR UPDATE") |> Repo.one!()
+      lot =
+        from(l in Lot, where: l.id == ^lot_id and l.sale_id == ^sale_id, lock: "FOR UPDATE")
+        |> Repo.one!()
 
       if lot.status != "pending" do
         {:error, :lot_not_pending}
       else
         {1, _} =
           from(l in Lot, where: l.id == ^lot.id)
-          |> Repo.update_all(set: [status: "open", current_bid: nil, leader_id: nil, updated_at: now], inc: [version: 1])
+          |> Repo.update_all(
+            set: [status: "open", current_bid: nil, leader_id: nil, updated_at: now],
+            inc: [version: 1]
+          )
 
         {:ok,
          %{
@@ -131,11 +147,21 @@ defmodule Umber.Auctions.Live do
     lot = from(l in Lot, where: l.id == ^session.lot_id, lock: "FOR UPDATE") |> Repo.one!()
     amount = session.asking
 
-    Repo.insert!(%Bid{lot_id: lot.id, user_id: bidder_id, amount: amount, kind: kind, source: source, inserted_at: now})
+    Repo.insert!(%Bid{
+      lot_id: lot.id,
+      user_id: bidder_id,
+      amount: amount,
+      kind: kind,
+      source: source,
+      inserted_at: now
+    })
 
     {1, _} =
       from(l in Lot, where: l.id == ^lot.id)
-      |> Repo.update_all(set: [current_bid: amount, leader_id: bidder_id, updated_at: now], inc: [bid_count: 1, version: 1])
+      |> Repo.update_all(
+        set: [current_bid: amount, leader_id: bidder_id, updated_at: now],
+        inc: [bid_count: 1, version: 1]
+      )
 
     where = %{"online" => "online", "room" => "in the room", "absentee" => "on the book"}[source]
 
@@ -153,26 +179,42 @@ defmodule Umber.Auctions.Live do
   @doc "Sets the asking price, up or down, before or between bids."
   def set_asking(sale_id, amount, now \\ nil) do
     change(sale_id, now, fn session, _now ->
-      floor = if session.current_bid, do: Increments.next(session.current_bid, session.current_bid), else: Increments.step(0)
+      floor =
+        if session.current_bid,
+          do: Increments.next(session.current_bid, session.current_bid),
+          else: Increments.step(0)
 
       cond do
-        not LiveSession.taking_bids?(session) -> {:error, :not_taking_bids}
-        amount < floor -> {:error, {:too_low, floor}}
-        true -> {:ok, %{asking: amount, state: "open", call: asking_call(session, amount)}, session}
+        not LiveSession.taking_bids?(session) ->
+          {:error, :not_taking_bids}
+
+        amount < floor ->
+          {:error, {:too_low, floor}}
+
+        true ->
+          {:ok, %{asking: amount, state: "open", call: asking_call(session, amount)}, session}
       end
     end)
   end
 
   defp asking_call(%{current_bid: nil}, amount), do: "Do I see #{money(amount)}?"
-  defp asking_call(%{current_bid: bid}, amount), do: "At #{money(bid)}. #{money(amount)}, anywhere?"
+
+  defp asking_call(%{current_bid: bid}, amount),
+    do: "At #{money(bid)}. #{money(amount)}, anywhere?"
 
   @doc "Fair warning: the last call before the hammer."
   def warn(sale_id, now \\ nil) do
     change(sale_id, now, fn session, _now ->
       cond do
-        session.state != "open" -> {:error, :not_open}
-        is_nil(session.current_bid) -> {:error, :no_bid}
-        true -> {:ok, %{state: "warning", call: "Fair warning, at #{money(session.current_bid)}."}, session}
+        session.state != "open" ->
+          {:error, :not_open}
+
+        is_nil(session.current_bid) ->
+          {:error, :no_bid}
+
+        true ->
+          {:ok, %{state: "warning", call: "Fair warning, at #{money(session.current_bid)}."},
+           session}
       end
     end)
   end
@@ -183,14 +225,22 @@ defmodule Umber.Auctions.Live do
       if not LiveSession.taking_bids?(session) do
         {:error, :not_taking_bids}
       else
-        lot = from(l in Lot, where: l.id == ^session.lot_id, lock: "FOR UPDATE", preload: [:sale]) |> Repo.one!()
+        lot =
+          from(l in Lot, where: l.id == ^session.lot_id, lock: "FOR UPDATE", preload: [:sale])
+          |> Repo.one!()
+
         result = Timed.finish(lot, now, session.current_bid)
 
         {state, call} =
           case result.lot.status do
-            "sold" -> {"sold", "Sold, for #{money(result.lot.hammer)}#{sold_to(session)}."}
-            _ when is_nil(session.current_bid) -> {"passed", "No bids. Lot #{lot.number} is passed."}
-            _ -> {"passed", "Passed, at #{money(session.current_bid)}."}
+            "sold" ->
+              {"sold", "Sold, for #{money(result.lot.hammer)}#{sold_to(session)}."}
+
+            _ when is_nil(session.current_bid) ->
+              {"passed", "No bids. Lot #{lot.number} is passed."}
+
+            _ ->
+              {"passed", "Passed, at #{money(session.current_bid)}."}
           end
 
         {:ok, %{state: state, call: call}, session, result}
@@ -205,33 +255,51 @@ defmodule Umber.Auctions.Live do
 
   def pause(sale_id, now \\ nil) do
     change(sale_id, now, fn session, _now ->
-      if session.state == "ended", do: {:error, :ended}, else: {:ok, %{state: "paused", call: "We'll pause for a moment."}, session}
+      if session.state == "ended",
+        do: {:error, :ended},
+        else: {:ok, %{state: "paused", call: "We'll pause for a moment."}, session}
     end)
   end
 
   def resume(sale_id, now \\ nil) do
     change(sale_id, now, fn session, _now ->
       cond do
-        session.state != "paused" -> {:error, :not_paused}
-        is_nil(session.lot_id) -> {:ok, %{state: "waiting", call: "Thank you for waiting."}, session}
-        lot_open?(session.lot_id) -> {:ok, %{state: "open", call: asking_call(session, session.asking)}, session}
-        true -> {:ok, %{state: "sold", call: "Thank you for waiting."}, session}
+        session.state != "paused" ->
+          {:error, :not_paused}
+
+        is_nil(session.lot_id) ->
+          {:ok, %{state: "waiting", call: "Thank you for waiting."}, session}
+
+        lot_open?(session.lot_id) ->
+          {:ok, %{state: "open", call: asking_call(session, session.asking)}, session}
+
+        true ->
+          {:ok, %{state: "sold", call: "Thank you for waiting."}, session}
       end
     end)
   end
 
-  defp lot_open?(lot_id), do: Repo.exists?(from l in Lot, where: l.id == ^lot_id and l.status == "open")
+  defp lot_open?(lot_id),
+    do: Repo.exists?(from l in Lot, where: l.id == ^lot_id and l.status == "open")
 
   def finish_sale(sale_id, now \\ nil) do
     change(sale_id, now, fn session, _now ->
-      {:ok, %{state: "ended", lot_id: nil, asking: nil, call: "That concludes the sale. Thank you all."}, session}
+      {:ok,
+       %{
+         state: "ended",
+         lot_id: nil,
+         asking: nil,
+         call: "That concludes the sale. Thank you all."
+       }, session}
     end)
   end
 
   @doc "Staff take or leave the rostrum. Only one person holds it at a time."
   def take_rostrum(sale_id, %User{} = staff, now \\ nil) do
     change(sale_id, now, fn session, now ->
-      held_by_other? = session.auctioneer_id && session.auctioneer_id != staff.id && fresh?(session.auctioneer_seen_at, now)
+      held_by_other? =
+        session.auctioneer_id && session.auctioneer_id != staff.id &&
+          fresh?(session.auctioneer_seen_at, now)
 
       cond do
         not User.role?(staff, "auctioneer") -> {:error, :not_auctioneer}
@@ -243,8 +311,11 @@ defmodule Umber.Auctions.Live do
 
   def leave_rostrum(sale_id, %User{id: id}, now \\ nil) do
     change(sale_id, now, fn
-      %{auctioneer_id: ^id} = session, _now -> {:ok, %{auctioneer_id: nil, auctioneer_seen_at: nil}, session}
-      _, _ -> {:error, :not_holding}
+      %{auctioneer_id: ^id} = session, _now ->
+        {:ok, %{auctioneer_id: nil, auctioneer_seen_at: nil}, session}
+
+      _, _ ->
+        {:error, :not_holding}
     end)
   end
 
@@ -268,7 +339,9 @@ defmodule Umber.Auctions.Live do
   # Locks the session row, takes the time, lets `fun` decide, and writes what it returns.
   defp change(sale_id, now, fun) do
     Repo.transaction(fn ->
-      session = from(s in LiveSession, where: s.sale_id == ^sale_id, lock: "FOR UPDATE") |> Repo.one()
+      session =
+        from(s in LiveSession, where: s.sale_id == ^sale_id, lock: "FOR UPDATE") |> Repo.one()
+
       if is_nil(session), do: Repo.rollback(:no_session)
       now = now || DateTime.utc_now()
 
@@ -284,7 +357,12 @@ defmodule Umber.Auctions.Live do
     stamp = if Map.has_key?(attrs, :call), do: %{called_at: now}, else: %{}
 
     session
-    |> Ecto.Changeset.change(attrs |> Map.merge(stamp) |> Map.put(:updated_at, now) |> Map.put(:version, session.version + 1))
+    |> Ecto.Changeset.change(
+      attrs
+      |> Map.merge(stamp)
+      |> Map.put(:updated_at, now)
+      |> Map.put(:version, session.version + 1)
+    )
     |> Repo.update!()
   end
 

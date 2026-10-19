@@ -13,7 +13,15 @@ defmodule Umber.Fixtures do
 
     Repo.insert!(
       struct(
-        %Artist{slug: "artist-#{n}", name: "Artist #{n}", born: 1970, nationality: "Kenyan", based: "Nairobi", discipline: "Painter", bio: "A painter."},
+        %Artist{
+          slug: "artist-#{n}",
+          name: "Artist #{n}",
+          born: 1970,
+          nationality: "Kenyan",
+          based: "Nairobi",
+          discipline: "Painter",
+          bio: "A painter."
+        },
         attrs
       )
     )
@@ -100,7 +108,13 @@ defmodule Umber.Fixtures do
     {:ok, user} =
       Accounts.register_bidder(
         Map.merge(
-          %{"name" => "Bidder #{n}", "email" => "bidder#{n}@example.com", "password" => "a long password", "country" => "Kenya", "accept_conditions" => "true"},
+          %{
+            "name" => "Bidder #{n}",
+            "email" => "bidder#{n}@example.com",
+            "password" => "a long password",
+            "country" => "Kenya",
+            "accept_conditions" => "true"
+          },
           attrs
         )
       )
@@ -112,7 +126,13 @@ defmodule Umber.Fixtures do
     n = unique()
 
     {:ok, user} =
-      %User{kind: "staff", name: "Staff #{n}", email: "staff#{n}@example.com", roles: roles, bid_limit: 0}
+      %User{
+        kind: "staff",
+        name: "Staff #{n}",
+        email: "staff#{n}@example.com",
+        roles: roles,
+        bid_limit: 0
+      }
       |> Ecto.Changeset.change()
       |> Accounts.insert_with_paddle("staff")
 
@@ -123,7 +143,12 @@ defmodule Umber.Fixtures do
     n = unique()
 
     {:ok, user} =
-      %User{kind: "sample", name: "Sample #{n}", email: "sample#{n}@sample.invalid", bid_limit: 50_000_000}
+      %User{
+        kind: "sample",
+        name: "Sample #{n}",
+        email: "sample#{n}@sample.invalid",
+        bid_limit: 50_000_000
+      }
       |> Ecto.Changeset.change()
       |> Accounts.insert_with_paddle("sample")
 

@@ -45,7 +45,9 @@ defmodule Umber.Auctions.TimedTest do
     end
 
     test "a closed, unopened or past-time lot refuses bids" do
-      assert Timed.place(lot(%{status: "pending"}).id, bidder(), :bid, 100_000) == {:error, :not_open}
+      assert Timed.place(lot(%{status: "pending"}).id, bidder(), :bid, 100_000) ==
+               {:error, :not_open}
+
       assert Timed.place(lot(%{status: "sold"}).id, bidder(), :bid, 100_000) == {:error, :closed}
 
       past = lot(%{closes_at: DateTime.add(DateTime.utc_now(), -1, :second)})
@@ -105,14 +107,19 @@ defmodule Umber.Auctions.TimedTest do
       assert closed.status == "sold"
       assert closed.hammer == 170_000
       assert closed.buyer_id == user.id
-      assert %Invoice{hammer: 170_000, premium: 34_000, vat: 5_440, total: 209_440, status: "due"} = invoice
+
+      assert %Invoice{hammer: 170_000, premium: 34_000, vat: 5_440, total: 209_440, status: "due"} =
+               invoice
     end
 
     test "a lot below its reserve is unsold, with no invoice" do
       lot = lot()
       {:ok, _} = Timed.place(lot.id, bidder(), :bid, 100_000)
       later = DateTime.add(DateTime.utc_now(), 3601, :second)
-      assert {:ok, %{lot: %Lot{status: "unsold", hammer: nil}, invoice: nil}} = Timed.close(lot.id, later)
+
+      assert {:ok, %{lot: %Lot{status: "unsold", hammer: nil}, invoice: nil}} =
+               Timed.close(lot.id, later)
+
       assert Repo.aggregate(Invoice, :count) == 0
     end
 

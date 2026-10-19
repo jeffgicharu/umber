@@ -2,15 +2,62 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="csrf-token" content={get_csrf_token()} />
-    <.live_title default="Umber" suffix=" · Phoenix Framework" phx-no-format>{assigns[:page_title]}</.live_title>
+    <.live_title default="Umber" suffix=" · Umber">{assigns[:page_title]}</.live_title>
+    <% meta =
+      assigns[:meta] ||
+        %{
+          title: "Umber",
+          description: UmberWeb.Meta.default_description(),
+          path: "/",
+          image: nil,
+          image_alt: nil,
+          type: "website",
+          json_ld: []
+        } %>
+    <meta name="description" content={meta.description} />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="canonical" href={UmberWeb.Meta.url(meta.path)} />
+    <meta property="og:site_name" content="Umber" />
+    <meta property="og:type" content={meta.type} />
+    <meta property="og:title" content={meta.title} />
+    <meta property="og:description" content={meta.description} />
+    <meta property="og:url" content={UmberWeb.Meta.url(meta.path)} />
+    <meta property="og:image" content={UmberWeb.Meta.image_url(meta.image)} />
+    <meta :if={meta.image_alt} property="og:image:alt" content={meta.image_alt} />
+    <meta property="og:locale" content="en_KE" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={meta.title} />
+    <meta name="twitter:description" content={meta.description} />
+    <meta name="twitter:image" content={UmberWeb.Meta.image_url(meta.image)} />
+    <meta name="theme-color" content="#f2ede4" />
+    <link rel="icon" href={~p"/favicon.ico"} sizes="32x32" />
+    <link rel="icon" href={~p"/images/brand/favicon.svg"} type="image/svg+xml" />
+    <link rel="apple-touch-icon" href={~p"/images/brand/apple-touch-icon.png"} />
+    <link rel="manifest" href={~p"/manifest.webmanifest"} />
+    <link
+      rel="preload"
+      href={~p"/fonts/bodoni-moda-latin-normal.woff2"}
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href={~p"/fonts/schibsted-grotesk-latin-normal.woff2"}
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
     <link phx-track-static rel="stylesheet" href={~p"/assets/css/app.css"} />
-    <link phx-track-static rel="stylesheet" href={~p"/assets/default.css"} />
     <script defer phx-track-static type="text/javascript" src={~p"/assets/js/app.js"}>
     </script>
+    <script type="application/ld+json">
+      <%= Phoenix.HTML.raw(UmberWeb.Meta.json([UmberWeb.Meta.organization() | List.wrap(meta.json_ld)])) %>
+    </script>
   </head>
-  <body>
+  <body class={assigns[:body_class]}>
     {@inner_content}
   </body>
 </html>

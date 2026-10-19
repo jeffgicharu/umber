@@ -12,8 +12,8 @@ defmodule UmberWeb.Endpoint do
   ]
 
   socket "/live", Phoenix.LiveView.Socket,
-    websocket: [connect_info: [session: @session_options]],
-    longpoll: [connect_info: [session: @session_options]]
+    websocket: [connect_info: [:peer_data, :x_headers, session: @session_options]],
+    longpoll: [connect_info: [:peer_data, :x_headers, session: @session_options]]
 
   # Serve at "/" the static files from "priv/static" directory.
   #
@@ -40,6 +40,7 @@ defmodule UmberWeb.Endpoint do
     param_key: "request_logger",
     cookie_key: "request_logger"
 
+  plug UmberWeb.RealIP
   plug Plug.RequestId
   plug Plug.Telemetry, event_prefix: [:phoenix, :endpoint]
 

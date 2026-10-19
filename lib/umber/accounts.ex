@@ -14,7 +14,8 @@ defmodule Umber.Accounts do
   def get_user!(id), do: Repo.get!(User, id)
   def get_user(id), do: Repo.get(User, id)
 
-  def get_user_by_email_and_password(email, password) when is_binary(email) and is_binary(password) do
+  def get_user_by_email_and_password(email, password)
+      when is_binary(email) and is_binary(password) do
     user = Repo.get_by(User, email: email |> String.trim() |> String.downcase())
     if User.valid_password?(user, password), do: user
   end
@@ -53,14 +54,18 @@ defmodule Umber.Accounts do
     range = Map.fetch!(@paddles, kind)
     paddle = Enum.random(range)
 
-    case cs |> Ecto.Changeset.put_change(:paddle, paddle) |> Ecto.Changeset.unique_constraint(:paddle) |> Repo.insert() do
+    case cs
+         |> Ecto.Changeset.put_change(:paddle, paddle)
+         |> Ecto.Changeset.unique_constraint(:paddle)
+         |> Repo.insert() do
       {:ok, user} ->
         {:ok, user}
 
       {:error, %Ecto.Changeset{errors: errors} = failed} ->
-        if Keyword.has_key?(errors, :paddle) and map_size(Map.delete(Map.new(errors), :paddle)) == 0,
-          do: insert_with_paddle(cs, kind, attempts - 1),
-          else: {:error, failed}
+        if Keyword.has_key?(errors, :paddle) and
+             map_size(Map.delete(Map.new(errors), :paddle)) == 0,
+           do: insert_with_paddle(cs, kind, attempts - 1),
+           else: {:error, failed}
     end
   end
 
@@ -111,8 +116,12 @@ defmodule Umber.Accounts do
     |> where([u], u.kind == "bidder")
     |> then(fn query ->
       case q && String.trim(q) do
-        nil -> query
-        "" -> query
+        nil ->
+          query
+
+        "" ->
+          query
+
         term ->
           like = "%" <> String.replace(term, ~r/[%_\\]/, "") <> "%"
 

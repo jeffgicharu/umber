@@ -23,7 +23,10 @@ defmodule Umber.Market.Lease do
   @impl true
   def init(_opts) do
     Process.flag(:trap_exit, true)
-    holder = "#{Application.get_env(:umber, :release, "dev")}:#{System.get_env("PORT", "4000")}:#{Base.encode16(:crypto.strong_rand_bytes(3))}"
+
+    holder =
+      "#{Application.get_env(:umber, :release, "dev")}:#{System.get_env("PORT", "4000")}:#{Base.encode16(:crypto.strong_rand_bytes(3))}"
+
     send(self(), :renew)
     {:ok, %{holder: holder, held: false, runner: nil}}
   end
@@ -75,7 +78,13 @@ defmodule Umber.Market.Lease do
   end
 
   defp run(%{held: true, runner: nil} = state) do
-    {:ok, pid} = Supervisor.start_link(Umber.Market.Supervisor.children(), strategy: :one_for_one, max_restarts: 20, max_seconds: 60)
+    {:ok, pid} =
+      Supervisor.start_link(Umber.Market.Supervisor.children(),
+        strategy: :one_for_one,
+        max_restarts: 20,
+        max_seconds: 60
+      )
+
     %{state | runner: pid}
   end
 

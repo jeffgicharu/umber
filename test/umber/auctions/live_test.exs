@@ -7,7 +7,16 @@ defmodule Umber.Auctions.LiveTest do
 
   setup do
     sale = sale(%{format: "live", status: "live", starts_at: DateTime.utc_now()})
-    lot = lot(%{sale: sale, status: "pending", reserve: 150_000, opening_bid: 100_000, closes_at: nil})
+
+    lot =
+      lot(%{
+        sale: sale,
+        status: "pending",
+        reserve: 150_000,
+        opening_bid: 100_000,
+        closes_at: nil
+      })
+
     Live.ensure(sale.id)
     {:ok, sale: sale, lot: lot}
   end
@@ -26,7 +35,10 @@ defmodule Umber.Auctions.LiveTest do
     assert s.call == "KES 100,000, online."
   end
 
-  test "a bid at an asking price that has moved is refused with the new one", %{sale: sale, lot: lot} do
+  test "a bid at an asking price that has moved is refused with the new one", %{
+    sale: sale,
+    lot: lot
+  } do
     {:ok, _} = Live.open_lot(sale.id, lot.id, 100_000)
     {:ok, _} = Live.floor_bid(sale.id, sample_bidder().id)
     assert Live.bid(sale.id, bidder(), 100_000) == {:error, {:asking_moved, 110_000}}
@@ -72,7 +84,10 @@ defmodule Umber.Auctions.LiveTest do
   test "below the reserve the lot is passed", %{sale: sale, lot: lot} do
     {:ok, _} = Live.open_lot(sale.id, lot.id, 100_000)
     {:ok, _} = Live.bid(sale.id, bidder(), 100_000)
-    assert {:ok, %{session: %{state: "passed", call: "Passed, at KES 100,000."}}} = Live.hammer(sale.id)
+
+    assert {:ok, %{session: %{state: "passed", call: "Passed, at KES 100,000."}}} =
+             Live.hammer(sale.id)
+
     assert Repo.aggregate(Invoice, :count) == 0
   end
 

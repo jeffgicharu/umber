@@ -17,7 +17,7 @@ defmodule UmberWeb do
   those modules here.
   """
 
-  def static_paths, do: ~w(assets fonts images favicon.ico robots.txt)
+  def static_paths, do: ~w(assets fonts images favicon.ico sw.js)
 
   def router do
     quote do
@@ -79,12 +79,14 @@ defmodule UmberWeb do
     quote do
       # HTML escaping functionality
       import Phoenix.HTML
-      # Core UI components
+      # Core UI components and the catalogue's own
       import UmberWeb.CoreComponents
+      import UmberWeb.Catalogue
 
       # Common modules used in templates
       alias Phoenix.LiveView.JS
       alias UmberWeb.Layouts
+      alias Umber.Format
 
       # Routes generation with the ~p sigil
       unquote(verified_routes())

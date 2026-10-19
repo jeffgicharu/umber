@@ -52,7 +52,15 @@ defmodule Umber.Market.SampleBidders do
       join: s in assoc(l, :sale),
       left_join: u in assoc(l, :leader),
       where: l.status == "open" and s.format == "timed" and s.status == "open",
-      select: %{id: l.id, current: l.current_bid, opening: l.opening_bid, value: l.market_value, closes_at: l.closes_at, leader_id: l.leader_id, leader_kind: u.kind}
+      select: %{
+        id: l.id,
+        current: l.current_bid,
+        opening: l.opening_bid,
+        value: l.market_value,
+        closes_at: l.closes_at,
+        leader_id: l.leader_id,
+        leader_kind: u.kind
+      }
     )
     |> Repo.all()
   end

@@ -34,7 +34,8 @@ defmodule Umber.Market.Auctioneer do
   @hammer 4
   @between_lots 5
 
-  def start_link(sale_id), do: GenServer.start_link(__MODULE__, sale_id, name: {:via, Registry, {@registry, sale_id}})
+  def start_link(sale_id),
+    do: GenServer.start_link(__MODULE__, sale_id, name: {:via, Registry, {@registry, sale_id}})
 
   def ensure(sale_id) do
     case Registry.lookup(@registry, sale_id) do
@@ -47,7 +48,13 @@ defmodule Umber.Market.Auctioneer do
   def init(sale_id) do
     Live.ensure(sale_id)
     send(self(), :tick)
-    {:ok, %{sale_id: sale_id, drops: 0, bots: from(u in User, where: u.kind == "sample", select: u.id) |> Repo.all()}}
+
+    {:ok,
+     %{
+       sale_id: sale_id,
+       drops: 0,
+       bots: from(u in User, where: u.kind == "sample", select: u.id) |> Repo.all()
+     }}
   end
 
   @impl true
@@ -57,10 +64,15 @@ defmodule Umber.Market.Auctioneer do
 
     state =
       try do
-        if Live.staffed?(session, now), do: state, else: step(session, quiet(session, now), now, state)
+        if Live.staffed?(session, now),
+          do: state,
+          else: step(session, quiet(session, now), now, state)
       rescue
         e ->
-          Logger.error("auctioneer #{state.sale_id}: " <> Exception.format(:error, e, __STACKTRACE__))
+          Logger.error(
+            "auctioneer #{state.sale_id}: " <> Exception.format(:error, e, __STACKTRACE__)
+          )
+
           state
       end
 
@@ -95,7 +107,8 @@ defmodule Umber.Market.Auctioneer do
         commit(Live.book_bid(state.sale_id), s.leader_id)
         state
 
-      quiet >= @room_bid and s.asking <= lot.market_value and :rand.uniform() < room_chance(s.asking, lot.market_value) ->
+      quiet >= @room_bid and s.asking <= lot.market_value and
+          :rand.uniform() < room_chance(s.asking, lot.market_value) ->
         bidder = state.bots |> Enum.reject(&(&1 == s.leader_id)) |> Enum.random()
         commit(Live.floor_bid(state.sale_id, bidder), s.leader_id)
         state
@@ -125,7 +138,8 @@ defmodule Umber.Market.Auctioneer do
         commit(Live.book_bid(state.sale_id), s.leader_id)
         state
 
-      quiet >= @room_bid and quiet < @hammer and s.asking <= lot.market_value and :rand.uniform() < room_chance(s.asking, lot.market_value) * 0.5 ->
+      quiet >= @room_bid and quiet < @hammer and s.asking <= lot.market_value and
+          :rand.uniform() < room_chance(s.asking, lot.market_value) * 0.5 ->
         bidder = state.bots |> Enum.reject(&(&1 == s.leader_id)) |> Enum.random()
         commit(Live.floor_bid(state.sale_id, bidder), s.leader_id)
         state
@@ -138,7 +152,8 @@ defmodule Umber.Market.Auctioneer do
     end
   end
 
-  defp step(%{state: st}, quiet, now, state) when st in ["sold", "passed"] and quiet >= @between_lots do
+  defp step(%{state: st}, quiet, now, state)
+       when st in ["sold", "passed"] and quiet >= @between_lots do
     open_next(state, now)
   end
 
@@ -162,13 +177,20 @@ defmodule Umber.Market.Auctioneer do
 
   defp open_next(state, now) do
     next =
-      from(l in Lot, where: l.sale_id == ^state.sale_id and l.status == "pending", order_by: l.number, limit: 1)
+      from(l in Lot,
+        where: l.sale_id == ^state.sale_id and l.status == "pending",
+        order_by: l.number,
+        limit: 1
+      )
       |> Repo.one()
 
     case next do
       nil ->
         {:ok, %{session: s}} = Live.finish_sale(state.sale_id)
-        from(x in Sale, where: x.id == ^state.sale_id) |> Repo.update_all(set: [status: "closed", ended_at: now, updated_at: now])
+
+        from(x in Sale, where: x.id == ^state.sale_id)
+        |> Repo.update_all(set: [status: "closed", ended_at: now, updated_at: now])
+
         Broadcasts.live(s)
         Umber.Events.broadcast("sale:#{state.sale_id}", :sale_changed)
         Umber.Events.broadcast("market", :sales_changed)
@@ -205,7 +227,18 @@ defmodule Umber.Market.Auctioneer do
     Repo.transaction(fn ->
       s = from(x in LiveSession, where: x.sale_id == ^sale_id, lock: "FOR UPDATE") |> Repo.one!()
       now = DateTime.utc_now()
-      %{session: s |> Ecto.Changeset.change(call: call, called_at: now, version: s.version + 1, updated_at: now) |> Repo.update!()}
+
+      %{
+        session:
+          s
+          |> Ecto.Changeset.change(
+            call: call,
+            called_at: now,
+            version: s.version + 1,
+            updated_at: now
+          )
+          |> Repo.update!()
+      }
     end)
   end
 end

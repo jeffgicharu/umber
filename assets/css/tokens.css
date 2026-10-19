@@ -1,0 +1,108 @@
+/* Umber: the catalogue by day, the salesroom by night. */
+
+@font-face {
+  font-family: "Bodoni Moda";
+  font-style: normal;
+  font-weight: 400 900;
+  font-display: swap;
+  src: url("/fonts/bodoni-moda-latin-normal.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Bodoni Moda";
+  font-style: italic;
+  font-weight: 400 900;
+  font-display: swap;
+  src: url("/fonts/bodoni-moda-latin-italic.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Schibsted Grotesk";
+  font-style: normal;
+  font-weight: 400 900;
+  font-display: swap;
+  src: url("/fonts/schibsted-grotesk-latin-normal.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Schibsted Grotesk";
+  font-style: italic;
+  font-weight: 400 900;
+  font-display: swap;
+  src: url("/fonts/schibsted-grotesk-latin-italic.woff2") format("woff2");
+}
+
+/* Fallbacks sized to the real faces, so text does not jump when they arrive. */
+@font-face {
+  font-family: "Bodoni Fallback";
+  src: local("Georgia"), local("Times New Roman");
+  size-adjust: 96%;
+  ascent-override: 92%;
+  descent-override: 24%;
+}
+
+@font-face {
+  font-family: "Grotesk Fallback";
+  src: local("Arial"), local("Helvetica");
+  size-adjust: 99%;
+  ascent-override: 95%;
+  descent-override: 25%;
+}
+
+:root {
+  /* Day: paper and ink */
+  --paper: #f2ede4;
+  --paper-2: #ebe4d8;
+  --paper-3: #e0d7c7;
+  --ink: #16120e;
+  --ink-2: #4a4038;
+  --ink-3: #6b5f53;
+  /* The studio's backdrop: every catalogue photograph of an object or a sheet
+     of paper has this colour at its edges. */
+  --backdrop: #dcd6cc;
+  --rule: rgb(22 18 14 / 0.14);
+  --rule-strong: rgb(22 18 14 / 0.32);
+
+  /* Night: the salesroom */
+  --umber: #3b2a1e;
+  --night: #120d0a;
+  --night-2: #1c1511;
+  --night-3: #2a201a;
+  --night-rule: rgb(242 237 228 / 0.12);
+  --night-ink: #f2ede4;
+  --night-ink-2: #c9bba8;
+  --night-ink-3: #94867a;
+
+  /* Signals */
+  --brass: #c9a46a;
+  --brass-hi: #e7cc98;
+  --vermilion: #e03c1f;
+  --vermilion-ink: #b8301a;
+  --verdigris: #2e7d6b;
+  --verdigris-hi: #5fb39e;
+
+  --serif: "Bodoni Moda", "Bodoni Fallback", Georgia, serif;
+  --sans: "Schibsted Grotesk", "Grotesk Fallback", Arial, sans-serif;
+
+  --t-xs: 0.75rem;
+  --t-sm: 0.875rem;
+  --t-base: 1rem;
+  --t-md: 1.125rem;
+  --t-lg: 1.3125rem;
+  --t-xl: clamp(1.5rem, 1.1rem + 1.2vw, 2rem);
+  --d-3: clamp(1.875rem, 1.2rem + 2.4vw, 3rem);
+  --d-2: clamp(2.5rem, 1.4rem + 4vw, 4.75rem);
+  --d-1: clamp(3.25rem, 1.6rem + 6.6vw, 8.5rem);
+
+  --gutter: clamp(20px, 4vw, 56px);
+  --wrap: 1440px;
+  --header-h: 68px;
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* A fine grain on the paper, like a printed page. */
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.09 0 0 0 0 0.07 0 0 0 0 0.05 0 0 0 0.07 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+
+  color-scheme: light;
+}

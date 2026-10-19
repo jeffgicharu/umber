@@ -15,14 +15,14 @@ defmodule Umber.Auctions.ConcurrencyTest do
 
     on_exit(fn ->
       Ecto.Adapters.SQL.Sandbox.mode(Repo, :auto)
-      Repo.delete_all(from b in Bid)
-      Repo.delete_all(from m in MaxBid)
-      Repo.delete_all(from i in Umber.Auctions.Invoice)
-      Repo.delete_all(from l in Lot)
-      Repo.delete_all(from s in Sale)
-      Repo.delete_all(from w in Work)
-      Repo.delete_all(from a in Artist)
-      Repo.delete_all(from u in User)
+      Repo.delete_all(from(b in Bid))
+      Repo.delete_all(from(m in MaxBid))
+      Repo.delete_all(from(i in Umber.Auctions.Invoice))
+      Repo.delete_all(from(l in Lot))
+      Repo.delete_all(from(s in Sale))
+      Repo.delete_all(from(w in Work))
+      Repo.delete_all(from(a in Artist))
+      Repo.delete_all(from(u in User))
       Ecto.Adapters.SQL.Sandbox.mode(Repo, :manual)
     end)
 
@@ -54,7 +54,13 @@ defmodule Umber.Auctions.ConcurrencyTest do
 
     accepted = Enum.count(results, &match?({:ok, _}, &1))
     final = Repo.get!(Lot, lot.id)
-    maxes = from(m in MaxBid, where: m.lot_id == ^lot.id, order_by: [desc: m.amount, asc: m.inserted_at, asc: m.id]) |> Repo.all()
+
+    maxes =
+      from(m in MaxBid,
+        where: m.lot_id == ^lot.id,
+        order_by: [desc: m.amount, asc: m.inserted_at, asc: m.id]
+      )
+      |> Repo.all()
 
     assert accepted >= 1
     assert final.version == lot.version + accepted
@@ -65,15 +71,28 @@ defmodule Umber.Auctions.ConcurrencyTest do
 
     expected =
       case rest do
-        [] -> max(lot.opening_bid, if(top.amount >= lot.reserve, do: lot.reserve, else: 0))
-        [second | _] when second.amount == top.amount -> top.amount
-        [second | _] -> min(top.amount, second.amount + Increments.step(second.amount)) |> max(if(top.amount >= lot.reserve, do: lot.reserve, else: 0))
+        [] ->
+          max(lot.opening_bid, if(top.amount >= lot.reserve, do: lot.reserve, else: 0))
+
+        [second | _] when second.amount == top.amount ->
+          top.amount
+
+        [second | _] ->
+          min(top.amount, second.amount + Increments.step(second.amount))
+          |> max(if(top.amount >= lot.reserve, do: lot.reserve, else: 0))
       end
 
     assert final.current_bid == expected
 
     # In the order they were recorded, bid amounts never go down.
-    amounts = from(b in Bid, where: b.lot_id == ^lot.id, order_by: [asc: b.inserted_at, asc: b.id], select: b.amount) |> Repo.all()
+    amounts =
+      from(b in Bid,
+        where: b.lot_id == ^lot.id,
+        order_by: [asc: b.inserted_at, asc: b.id],
+        select: b.amount
+      )
+      |> Repo.all()
+
     assert amounts == Enum.sort(amounts)
     assert List.last(amounts) == final.current_bid
   end
@@ -83,7 +102,10 @@ defmodule Umber.Auctions.ConcurrencyTest do
     {:ok, _} = Timed.place(lot.id, bidder(%{}), :max, 300_000)
     later = DateTime.add(DateTime.utc_now(), 3601, :second)
 
-    results = 1..20 |> Task.async_stream(fn _ -> Timed.close(lot.id, later) end, max_concurrency: 20) |> Enum.map(fn {:ok, r} -> r end)
+    results =
+      1..20
+      |> Task.async_stream(fn _ -> Timed.close(lot.id, later) end, max_concurrency: 20)
+      |> Enum.map(fn {:ok, r} -> r end)
 
     assert Enum.count(results, &match?({:ok, %{lot: _}}, &1)) == 1
     assert Enum.count(results, &(&1 == {:ok, :already_closed})) == 19
@@ -98,7 +120,10 @@ defmodule Umber.Auctions.ConcurrencyTest do
     [{pid, _}] = Registry.lookup(Umber.Auctions.LotRegistry, lot.id)
 
     Process.exit(pid, :kill)
-    wait_until(fn -> match?([{p, _}] when p != pid, Registry.lookup(Umber.Auctions.LotRegistry, lot.id)) end)
+
+    wait_until(fn ->
+      match?([{p, _}] when p != pid, Registry.lookup(Umber.Auctions.LotRegistry, lot.id))
+    end)
 
     {:ok, change} = LotServer.bid(lot.id, b, :bid, 110_000)
     assert change.lot.current_bid == 110_000

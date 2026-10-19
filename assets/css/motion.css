@@ -1,0 +1,112 @@
+/* Movement shared across pages */
+
+/* Page loading bar */
+.page-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 90;
+  height: 2px;
+  background: var(--brass);
+  transform: scaleX(0);
+  transform-origin: left;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.page-bar.on {
+  opacity: 1;
+  animation: bar-run 2.4s var(--ease-out) forwards;
+}
+
+@keyframes bar-run {
+  from {
+    transform: scaleX(0.05);
+  }
+  to {
+    transform: scaleX(0.85);
+  }
+}
+
+/* Moving between pages: the picture of a work grows from its card into the lot
+   page; everything else crossfades quickly. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.28s;
+}
+
+::view-transition-group(*) {
+  animation-duration: 0.55s;
+  animation-timing-function: var(--ease-out);
+}
+
+/* Lot cards lift onto the page as they scroll into view. */
+@supports (animation-timeline: view()) {
+  .lot-grid .lot-card,
+  .cover-grid .sale-cover,
+  .results-list li {
+    animation: lift-in linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 60%;
+  }
+
+  @keyframes lift-in {
+    from {
+      opacity: 0;
+      transform: translateY(32px);
+    }
+  }
+}
+
+/* A late bid's extra two minutes, landing next to the clock. */
+.countdown {
+  position: relative;
+}
+
+.extended-badge {
+  position: absolute;
+  left: calc(100% + 8px);
+  top: 50%;
+  margin-top: -0.75em;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--vermilion);
+  color: #fff;
+  font-size: var(--t-xs);
+  font-weight: 700;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* Rolling numbers */
+.odo {
+  display: inline-flex;
+  align-items: baseline;
+  white-space: nowrap;
+}
+
+.odo-col {
+  position: relative;
+  display: inline-block;
+  height: 1em;
+  line-height: 1;
+  overflow: hidden;
+  vertical-align: baseline;
+}
+
+.odo-strip {
+  display: flex;
+  flex-direction: column;
+}
+
+.odo-strip span {
+  height: 1em;
+  line-height: 1;
+  text-align: center;
+}
+
+.odo-sep {
+  display: inline-block;
+  line-height: 1;
+}

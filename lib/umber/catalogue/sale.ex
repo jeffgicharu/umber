@@ -40,7 +40,17 @@ defmodule Umber.Catalogue.Sale do
   @doc "Staff edit of a sale's details."
   def changeset(sale, attrs) do
     sale
-    |> cast(attrs, [:title, :format, :category, :summary, :description, :opens_at, :first_close_at, :lot_interval, :starts_at])
+    |> cast(attrs, [
+      :title,
+      :format,
+      :category,
+      :summary,
+      :description,
+      :opens_at,
+      :first_close_at,
+      :lot_interval,
+      :starts_at
+    ])
     |> validate_required([:title, :format, :category, :summary, :description])
     |> validate_inclusion(:format, @formats)
     |> validate_length(:title, max: 120)

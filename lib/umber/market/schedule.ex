@@ -35,12 +35,20 @@ defmodule Umber.Market.Schedule do
   def next_timed(template, %DateTime{} = now) do
     minute = Map.fetch!(@timed, template)
     base = %{now | minute: minute, second: 0, microsecond: {0, 6}}
-    latest = if DateTime.compare(base, now) == :gt, do: DateTime.add(base, -3600, :second), else: base
+
+    latest =
+      if DateTime.compare(base, now) == :gt, do: DateTime.add(base, -3600, :second), else: base
 
     opens =
-      if DateTime.diff(now, latest, :second) < 600, do: latest, else: DateTime.add(latest, 3600, :second)
+      if DateTime.diff(now, latest, :second) < 600,
+        do: latest,
+        else: DateTime.add(latest, 3600, :second)
 
-    %{opens_at: opens, first_close_at: DateTime.add(opens, @closing_after, :second), lot_interval: @interval}
+    %{
+      opens_at: opens,
+      first_close_at: DateTime.add(opens, @closing_after, :second),
+      lot_interval: @interval
+    }
   end
 
   def timed_templates, do: Map.keys(@timed)

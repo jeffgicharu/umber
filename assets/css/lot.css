@@ -1,0 +1,500 @@
+/* A lot's page */
+
+.lot-page {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  gap: clamp(28px, 5vw, 80px);
+  align-items: start;
+  padding-block: 24px clamp(48px, 7vw, 96px);
+}
+
+/* The picture column runs the full height of the page, so the picture can
+   stay in view while the notes beside it scroll. */
+.lot-stage {
+  align-self: stretch;
+}
+
+.lot-stage-sticky {
+  position: sticky;
+  top: calc(var(--header-h) + 20px);
+}
+
+.lot-frame {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: clamp(320px, 62vh, 760px);
+  padding: clamp(24px, 5vw, 72px);
+  background: var(--paper-2);
+  overflow: hidden;
+}
+
+.lot-frame > .work-image {
+  max-height: calc(62vh - 80px);
+  max-width: 100%;
+  width: auto;
+  height: auto;
+  box-shadow:
+    0 2px 2px rgb(22 18 14 / 0.08),
+    0 40px 60px -34px rgb(22 18 14 / 0.55);
+}
+
+.lot-frame > .work-image.object {
+  box-shadow: none;
+}
+
+.lot-frame > .work-image img {
+  max-height: calc(62vh - 80px);
+  width: auto;
+  object-fit: contain;
+}
+
+.zoom-button {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  padding: 0 14px;
+  border: 1px solid var(--rule-strong);
+  border-radius: 999px;
+  background: rgb(242 237 228 / 0.92);
+  font-size: var(--t-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+
+.zoom-button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.lot-views {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.lot-views button {
+  display: grid;
+  gap: 6px;
+  padding: 6px;
+  border: 1px solid var(--rule);
+  background: transparent;
+  font-size: var(--t-xs);
+  font-weight: 600;
+  text-align: left;
+}
+
+.lot-views button[aria-pressed="true"] {
+  border-color: var(--ink);
+}
+
+.lot-views .work-image {
+  width: 96px;
+  height: 72px;
+  aspect-ratio: auto !important;
+}
+
+.lot-views .work-image img {
+  object-fit: cover;
+}
+
+.lot-info {
+  display: grid;
+  gap: 28px;
+}
+
+.lot-number {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  border-bottom: 1px solid var(--ink);
+  padding-bottom: 6px;
+}
+
+.lot-number .num {
+  font-size: clamp(5rem, 3rem + 7vw, 9.5rem);
+  font-variation-settings: "opsz" 18;
+  line-height: 0.78;
+  letter-spacing: -0.05em;
+}
+
+.lot-caption .artist-line {
+  font-size: var(--t-sm);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.lot-caption .artist-line a {
+  text-decoration: none;
+}
+
+.lot-caption .artist-line a:hover {
+  text-decoration: underline;
+}
+
+.lot-caption .dates {
+  font-weight: 500;
+  color: var(--ink-3);
+  letter-spacing: 0.06em;
+}
+
+.lot-caption h1 {
+  margin-top: 10px;
+  font-size: var(--d-3);
+  line-height: 1.08;
+}
+
+.lot-caption h1 em {
+  font-style: italic;
+}
+
+.lot-caption .year {
+  font-variant-numeric: lining-nums;
+}
+
+.lot-medium {
+  margin-top: 6px;
+  color: var(--ink-2);
+}
+
+.lot-estimate {
+  margin-top: 14px;
+  font-size: var(--t-sm);
+}
+
+/* The bid panel */
+
+.bid-panel {
+  border: 1px solid var(--ink);
+  background: rgb(255 255 255 / 0.45);
+  transition:
+    box-shadow 0.4s,
+    border-color 0.4s;
+}
+
+.bid-panel.is-leading {
+  border-color: var(--verdigris);
+  box-shadow: inset 4px 0 0 var(--verdigris);
+}
+
+.bid-panel.is-outbid {
+  border-color: var(--vermilion-ink);
+  box-shadow: inset 4px 0 0 var(--vermilion);
+}
+
+.bid-now,
+.bid-result {
+  display: grid;
+  gap: 16px;
+  padding: clamp(20px, 3vw, 28px);
+}
+
+.bid-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: start;
+}
+
+.bid-amount {
+  margin-top: 4px;
+  font-size: clamp(2rem, 1.4rem + 2vw, 2.9rem);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+
+.bid-sub {
+  margin-top: 6px;
+  font-size: var(--t-sm);
+}
+
+.bid-time {
+  text-align: right;
+}
+
+.bid-clock {
+  margin-top: 4px;
+  font-size: clamp(1.6rem, 1.2rem + 1.4vw, 2.25rem);
+  line-height: 1.1;
+}
+
+.bid-clock .countdown {
+  font-family: var(--serif);
+  font-weight: 400;
+}
+
+.bid-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  font-size: var(--t-sm);
+}
+
+.bid-actions {
+  display: grid;
+  gap: 10px;
+}
+
+.bid-button {
+  min-height: 56px;
+  font-size: var(--t-base);
+}
+
+.bid-actions.confirm {
+  padding: 16px;
+  margin: 0 -4px;
+  background: var(--paper-2);
+  animation: notice-in 0.3s var(--ease-out);
+}
+
+.bid-note {
+  font-size: var(--t-xs);
+}
+
+.bid-limit {
+  display: grid;
+  gap: 10px;
+  font-size: var(--t-sm);
+}
+
+.max-form {
+  display: grid;
+  gap: 8px;
+  padding-top: 16px;
+  border-top: 1px solid var(--rule);
+}
+
+.max-row {
+  display: flex;
+  gap: 8px;
+}
+
+.max-row .select,
+.max-row .input {
+  flex: 1;
+  min-width: 0;
+}
+
+.bid-panel-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px clamp(20px, 3vw, 28px);
+  border-top: 1px solid var(--rule);
+}
+
+.bid-won {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+}
+
+.bid-live-text {
+  font-family: var(--serif);
+  font-size: var(--t-xl);
+}
+
+/* Bid history */
+
+.lot-history ol {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  max-height: 340px;
+  overflow-y: auto;
+}
+
+.lot-history li {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 0.9fr) auto;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--rule);
+  font-size: var(--t-sm);
+  animation: history-in 0.6s var(--ease-out);
+}
+
+.lot-history li .serif {
+  font-size: 1.05rem;
+}
+
+.lot-history li.mine {
+  color: var(--verdigris);
+  font-weight: 600;
+}
+
+@keyframes history-in {
+  from {
+    background: rgb(201 164 106 / 0.35);
+  }
+}
+
+/* Catalogue notes */
+
+.lot-notes {
+  display: grid;
+  gap: 26px;
+  padding-top: 8px;
+}
+
+.lot-notes .note {
+  display: grid;
+  gap: 8px;
+  padding-top: 18px;
+  border-top: 1px solid var(--rule);
+}
+
+.lot-notes .note p {
+  max-width: 60ch;
+}
+
+.lot-notes .note .text-link {
+  justify-self: start;
+  margin-top: 6px;
+}
+
+/* Previous and next */
+
+.lot-pager {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 20px;
+  padding-block: 28px;
+  background: linear-gradient(var(--ink), var(--ink)) top center / calc(100% - 2 * var(--gutter)) 1px no-repeat;
+}
+
+.pager-link {
+  display: grid;
+  gap: 4px;
+  text-decoration: none;
+}
+
+.pager-link .serif {
+  font-size: var(--t-lg);
+}
+
+.pager-link.next {
+  grid-column: 3;
+  text-align: right;
+}
+
+.pager-all {
+  grid-column: 2;
+}
+
+@media (max-width: 980px) {
+  .lot-page {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .lot-stage-sticky {
+    position: static;
+  }
+
+  .lot-frame {
+    min-height: 0;
+  }
+
+  .lot-frame > .work-image,
+  .lot-frame > .work-image img {
+    max-height: 70vh;
+  }
+}
+
+@media (max-width: 560px) {
+  .bid-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .bid-time {
+    text-align: left;
+  }
+
+  .lot-pager {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .pager-all {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-self: center;
+  }
+
+  .max-row {
+    flex-direction: column;
+  }
+}
+
+/* Looking closer */
+
+.zoom-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: rgb(18 13 10 / 0.96);
+  cursor: zoom-out;
+  overflow: hidden;
+  touch-action: none;
+  animation: fade-in 0.25s ease-out;
+}
+
+.zoom-layer img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  max-width: none;
+  transform-origin: 0 0;
+  will-change: transform;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.zoom-layer .zoom-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 2;
+  height: 40px;
+  padding: 0 16px;
+  border: 1px solid var(--night-rule);
+  border-radius: 999px;
+  background: var(--night-2);
+  color: var(--night-ink);
+  font-size: var(--t-sm);
+}
+
+.zoom-layer .zoom-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  color: var(--night-ink-3);
+  font-size: var(--t-xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.lot-frame:has(.work-image.studio) {
+  background: var(--backdrop);
+}
+
+.lot-frame > .work-image.studio {
+  box-shadow: none;
+}

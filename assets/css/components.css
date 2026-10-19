@@ -1,0 +1,751 @@
+/* Buttons */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 0 22px;
+  border: 1px solid var(--ink);
+  border-radius: 2px;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: var(--t-sm);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background 0.2s,
+    color 0.2s,
+    border-color 0.2s,
+    transform 0.2s var(--ease-out);
+}
+
+.btn:hover {
+  background: var(--umber);
+  border-color: var(--umber);
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn .arrow {
+  transition: transform 0.3s var(--ease-out);
+}
+
+.btn:hover .arrow {
+  transform: translateX(4px);
+}
+
+.btn.ghost {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--rule-strong);
+}
+
+.btn.ghost:hover {
+  border-color: var(--ink);
+  background: rgb(22 18 14 / 0.04);
+}
+
+.btn.brass {
+  background: var(--brass);
+  border-color: var(--brass);
+  color: var(--night);
+}
+
+.btn.brass:hover {
+  background: var(--brass-hi);
+  border-color: var(--brass-hi);
+}
+
+.btn.block {
+  width: 100%;
+}
+
+.btn.small {
+  min-height: 38px;
+  padding: 0 14px;
+  font-size: var(--t-xs);
+}
+
+.btn[disabled],
+.btn.disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.night .btn.ghost {
+  color: var(--night-ink);
+  border-color: var(--night-rule);
+}
+
+.night .btn.ghost:hover {
+  border-color: var(--night-ink-2);
+  background: rgb(242 237 228 / 0.05);
+}
+
+.text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 3px;
+  border-bottom: 1px solid currentColor;
+  font-size: var(--t-sm);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.text-link .arrow {
+  transition: transform 0.3s var(--ease-out);
+}
+
+.text-link:hover .arrow {
+  transform: translateX(4px);
+}
+
+/* Forms */
+
+.field {
+  display: grid;
+  gap: 6px;
+}
+
+.field + .field {
+  margin-top: 18px;
+}
+
+.field label,
+.field .legend {
+  font-size: var(--t-sm);
+  font-weight: 600;
+}
+
+.field .hint {
+  color: var(--ink-3);
+  font-size: var(--t-sm);
+}
+
+.input,
+.select,
+.textarea {
+  width: 100%;
+  min-height: 48px;
+  padding: 11px 14px;
+  border: 1px solid var(--rule-strong);
+  border-radius: 2px;
+  background: rgb(255 255 255 / 0.55);
+  font-size: var(--t-base);
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+
+.textarea {
+  min-height: 120px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.select {
+  appearance: none;
+  padding-right: 40px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%2316120e' stroke-width='1.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+}
+
+.input:focus,
+.select:focus,
+.textarea:focus {
+  outline: none;
+  border-color: var(--ink);
+  box-shadow: 0 0 0 3px rgb(201 164 106 / 0.35);
+}
+
+.field.invalid .input,
+.field.invalid .select,
+.field.invalid .textarea {
+  border-color: var(--vermilion-ink);
+}
+
+.error-text {
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+  color: var(--vermilion-ink);
+  font-size: var(--t-sm);
+  font-weight: 500;
+}
+
+.error-text::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  margin-top: 0.45em;
+  flex: none;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.check {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  font-size: var(--t-sm);
+}
+
+.check input {
+  width: 20px;
+  height: 20px;
+  margin: 1px 0 0;
+  accent-color: var(--ink);
+  flex: none;
+}
+
+.form-panel {
+  padding: clamp(24px, 4vw, 40px);
+  background: rgb(255 255 255 / 0.4);
+  border: 1px solid var(--rule);
+}
+
+.night .input,
+.night .select {
+  background: var(--night-2);
+  border-color: var(--night-rule);
+  color: var(--night-ink);
+}
+
+/* Status chips */
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: var(--t-xs);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  background: var(--paper-2);
+  color: var(--ink-2);
+}
+
+.chip::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  flex: none;
+}
+
+.chip.plain::before {
+  display: none;
+}
+
+.chip.leading {
+  background: rgb(46 125 107 / 0.12);
+  color: var(--verdigris);
+}
+
+.chip.outbid {
+  background: rgb(224 60 31 / 0.1);
+  color: var(--vermilion-ink);
+}
+
+.chip.live {
+  background: var(--night);
+  color: var(--night-ink);
+}
+
+.chip.live::before {
+  background: var(--vermilion);
+  animation: live-pulse 1.8s var(--ease-out) infinite;
+}
+
+.chip.sold {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.chip.sold::before {
+  display: none;
+}
+
+.night .chip {
+  background: var(--night-3);
+  color: var(--night-ink-2);
+}
+
+.night .chip.leading {
+  background: rgb(95 179 158 / 0.16);
+  color: var(--verdigris-hi);
+}
+
+.night .chip.outbid {
+  background: rgb(224 60 31 / 0.18);
+  color: #ff8a70;
+}
+
+/* Section heads, as in a catalogue */
+
+.section {
+  padding-block: clamp(48px, 8vw, 112px);
+}
+
+.section-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 16px 32px;
+  margin-bottom: clamp(24px, 4vw, 48px);
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--ink);
+}
+
+.section-head h2 {
+  font-size: var(--d-2);
+}
+
+.section-head .label {
+  grid-column: 1 / -1;
+  order: -1;
+}
+
+@media (max-width: 640px) {
+  .section-head {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* The picture of a work */
+
+.work-image {
+  position: relative;
+  background: var(--paper-3);
+  overflow: hidden;
+}
+
+.work-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.work-image.contain img {
+  object-fit: contain;
+}
+
+.work-image .placeholder {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(120% 90% at 30% 20%, rgb(255 255 255 / 0.35), transparent 60%),
+    linear-gradient(160deg, var(--paper-3), #cfc3ae);
+  color: rgb(22 18 14 / 0.35);
+  font-family: var(--serif);
+  font-size: clamp(2rem, 6vw, 4rem);
+}
+
+/* Captions, set like a catalogue entry */
+
+.caption .artist {
+  font-size: var(--t-xs);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.caption .artist .dates {
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--ink-3);
+}
+
+.caption .work-title {
+  margin-top: 4px;
+  font-family: var(--serif);
+  font-size: var(--t-lg);
+  line-height: 1.2;
+}
+
+.caption .work-title em {
+  font-style: italic;
+}
+
+.caption .medium {
+  margin-top: 4px;
+  color: var(--ink-3);
+  font-size: var(--t-sm);
+}
+
+.estimate {
+  font-size: var(--t-sm);
+  font-variant-numeric: lining-nums;
+  color: var(--ink-2);
+}
+
+.estimate-word {
+  font-size: var(--t-xs);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.estimate-amount {
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.night .estimate-amount {
+  color: var(--night-ink);
+}
+
+.night .caption .artist .dates,
+.night .caption .medium {
+  color: var(--night-ink-3);
+}
+
+.night .estimate {
+  color: var(--night-ink-2);
+}
+
+/* Lot cards in the catalogue grid */
+
+.lot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  gap: clamp(32px, 4vw, 56px) clamp(20px, 2.6vw, 40px);
+  align-items: stretch;
+}
+
+/* Cards in a row are the same height, so their status lines line up. */
+.lot-card {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 16px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.lot-card .frame {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 4 / 5;
+  padding: 9%;
+  background: var(--paper-2);
+  transition: background 0.4s var(--ease-out);
+}
+
+.lot-card .frame .work-image {
+  width: 100%;
+  background: none;
+  box-shadow:
+    0 1px 1px rgb(22 18 14 / 0.08),
+    0 18px 30px -18px rgb(22 18 14 / 0.45);
+  transition:
+    transform 0.6s var(--ease-out),
+    box-shadow 0.6s var(--ease-out);
+}
+
+.lot-card .frame .work-image.object {
+  box-shadow: none;
+}
+
+.lot-card:hover .frame {
+  background: var(--paper-3);
+}
+
+.lot-card:hover .frame .work-image {
+  transform: translateY(-6px);
+  box-shadow:
+    0 1px 1px rgb(22 18 14 / 0.08),
+    0 30px 40px -22px rgb(22 18 14 / 0.5);
+}
+
+.lot-card .meta {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-rows: auto 1fr;
+  gap: 0 16px;
+  align-items: start;
+}
+
+.lot-card .lotno {
+  font-family: var(--serif);
+  font-size: 3.25rem;
+  font-variation-settings: "opsz" 18;
+  line-height: 0.82;
+  letter-spacing: -0.03em;
+  min-width: 1.1em;
+}
+
+.lot-card .state {
+  grid-column: 1 / -1;
+  align-self: end;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 12px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--rule);
+  font-size: var(--t-sm);
+}
+
+.lot-card .state .bid {
+  font-weight: 600;
+  font-variant-numeric: lining-nums;
+}
+
+.lot-card .state .bid small {
+  margin-left: 6px;
+  color: var(--ink-3);
+  font-weight: 400;
+}
+
+.lot-card .watch-mark {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+}
+
+.countdown {
+  font-variant-numeric: tabular-nums lining-nums;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.countdown[data-urgency="soon"] {
+  color: var(--vermilion-ink);
+}
+
+.countdown[data-urgency="now"] {
+  color: var(--vermilion-ink);
+  animation: closing-pulse 1s ease-in-out infinite;
+}
+
+.night .countdown[data-urgency="soon"],
+.night .countdown[data-urgency="now"] {
+  color: #ff8a70;
+}
+
+@keyframes closing-pulse {
+  50% {
+    opacity: 0.45;
+  }
+}
+
+/* A sale as the cover of its catalogue */
+
+.sale-cover {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 18px;
+  min-height: 100%;
+  padding: 26px 26px 24px;
+  border: 1px solid var(--ink);
+  background: var(--paper);
+  text-decoration: none;
+  transition:
+    transform 0.5s var(--ease-out),
+    box-shadow 0.5s var(--ease-out);
+}
+
+.sale-cover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 24px 40px -28px rgb(22 18 14 / 0.6);
+}
+
+.sale-cover .top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.sale-cover h3 {
+  font-size: var(--t-xl);
+  line-height: 1.1;
+}
+
+.sale-cover .when {
+  font-size: var(--t-sm);
+  color: var(--ink-2);
+}
+
+.sale-cover .number {
+  font-family: var(--serif);
+  font-size: 1rem;
+  font-variant-numeric: lining-nums;
+  color: var(--ink-3);
+}
+
+.sale-cover.night-cover {
+  background: var(--night);
+  color: var(--night-ink);
+  border-color: var(--night);
+}
+
+.sale-cover.night-cover .when,
+.sale-cover.night-cover .number {
+  color: var(--night-ink-2);
+}
+
+/* Tables */
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--t-sm);
+}
+
+.table th {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--ink);
+  text-align: left;
+  font-size: var(--t-xs);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+
+.table td {
+  padding: 12px;
+  border-bottom: 1px solid var(--rule);
+  vertical-align: top;
+}
+
+.table td.num,
+.table th.num {
+  text-align: right;
+  font-variant-numeric: lining-nums;
+}
+
+.table tr.mine td {
+  background: rgb(46 125 107 / 0.07);
+}
+
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Empty states */
+
+.empty {
+  display: grid;
+  justify-items: start;
+  gap: 14px;
+  padding: clamp(28px, 5vw, 48px);
+  border: 1px dashed var(--rule-strong);
+}
+
+.empty h3 {
+  font-size: var(--t-xl);
+}
+
+.empty p {
+  color: var(--ink-2);
+  max-width: 52ch;
+}
+
+/* Breadcrumbs */
+
+.crumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  padding-block: 22px 0;
+  font-size: var(--t-sm);
+  color: var(--ink-3);
+}
+
+.crumbs a {
+  text-decoration: none;
+  color: var(--ink-2);
+}
+
+.crumbs a:hover {
+  text-decoration: underline;
+}
+
+.crumbs .sep {
+  opacity: 0.6;
+}
+
+.watch-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 14px;
+  border: 1px solid var(--rule-strong);
+  border-radius: 999px;
+  background: rgb(242 237 228 / 0.92);
+  font-size: var(--t-sm);
+  font-weight: 600;
+}
+
+.watch-button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.watch-button[aria-pressed="true"] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+
+.watch-button.icon-only {
+  width: 40px;
+  padding: 0;
+}
+
+.night .watch-button {
+  background: var(--night-2);
+  border-color: var(--night-rule);
+  color: var(--night-ink);
+}
+
+/* Studio photographs: the object and its backdrop sit on the same colour,
+   so there is no box around them. */
+.lot-card .frame:has(.work-image.studio) {
+  background: var(--backdrop);
+  padding: 0;
+}
+
+.lot-card:hover .frame:has(.work-image.studio) {
+  background: var(--backdrop);
+}
+
+.work-image.studio {
+  background: var(--backdrop);
+}
+
+.lot-card .frame .work-image.studio,
+.lot-card:hover .frame .work-image.studio {
+  box-shadow: none;
+}
+
+.lot-card:hover .frame .work-image.studio {
+  transform: translateY(-4px) scale(1.01);
+}

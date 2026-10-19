@@ -1,0 +1,50 @@
+<Layouts.app flash={@flash} current_user={@current_user} active={:about}>
+  <header class="page-head wrap">
+    <p class="label">About the house</p>
+    <h1>An auction house for the art of this region</h1>
+  </header>
+  <div class="wrap split">
+    <div class="split-image">
+      <.photo
+        name="photo-salesroom"
+        alt="The salesroom at Umber House during a live sale, bidders raising paddles towards the rostrum."
+        ratio="16 / 9"
+      />
+    </div>
+    <div class="split-text prose">
+      <p>
+        Umber sells modern and contemporary art from Kenya, Tanzania, Uganda, Rwanda and Ethiopia, and collectable design from the workshops of Nairobi and the coast. We hold live sales from the rostrum at Umber House on Lenana Road, and online sales that close lot by lot through the day.
+      </p>
+      <p>
+        We were started by specialists who had spent years watching the region's best paintings leave for sales abroad, where few people who knew them could bid. Our sales are held here and open to anyone with a phone.
+      </p>
+      <p>
+        Every lot is examined, photographed and written up by our specialists, with a condition report and what we know of where it has been. Estimates are our honest view of what a work will fetch, and the reserve, which is kept confidential, is never above the low estimate.
+      </p>
+    </div>
+  </div>
+  <section class="wrap section facts">
+    <dl class="fact-grid">
+      <div>
+        <dt class="label">Buyer's premium</dt><dd class="serif">20%</dd><p>
+          of the hammer price, with VAT on the premium only
+        </p>
+      </div>
+      <div>
+        <dt class="label">Live sessions</dt><dd class="serif num">:15 &amp; :45</dd><p>
+          past every hour, from the rostrum and online
+        </p>
+      </div>
+      <div>
+        <dt class="label">Late bids</dt><dd class="serif">+2:00</dd><p>
+          a bid in the last two minutes gives a lot two more
+        </p>
+      </div>
+      <div>
+        <dt class="label">Reserves</dt><dd class="serif">≤ low</dd><p>
+          never above the low estimate
+        </p>
+      </div>
+    </dl>
+  </section>
+</Layouts.app>
