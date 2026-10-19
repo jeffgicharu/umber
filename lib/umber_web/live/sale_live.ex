@@ -115,6 +115,7 @@ defmodule UmberWeb.SaleLive do
         closes_at: e.closes_at,
         extensions: e.extensions,
         hammer: e.hammer,
+        buyer_id: Map.get(e, :buyer_id),
         closed_at: Map.get(e, :closed_at),
         version: e.version
     }

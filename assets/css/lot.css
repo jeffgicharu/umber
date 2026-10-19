@@ -225,7 +225,8 @@
 
 .bid-clock .countdown {
   font-family: var(--serif);
-  font-weight: 400;
+  font-weight: 500;
+  font-variation-settings: "opsz" 18;
 }
 
 .bid-status {

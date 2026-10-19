@@ -24,6 +24,7 @@ defmodule Umber.Auctions.Broadcasts do
       closes_at: lot.closes_at,
       extensions: lot.extensions,
       hammer: lot.hammer,
+      buyer_id: lot.buyer_id,
       closed_at: lot.closed_at,
       reserve_met: Lot.reserve_met?(lot),
       version: lot.version,

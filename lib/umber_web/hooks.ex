@@ -14,7 +14,7 @@ defmodule UmberWeb.Hooks do
   alias Umber.{Repo, Events}
   alias Umber.Catalogue.Sale
 
-  @notice_ttl 9_000
+  @notice_ttl 12_000
 
   def on_mount(:default, _params, _session, socket) do
     user = socket.assigns[:current_user]
