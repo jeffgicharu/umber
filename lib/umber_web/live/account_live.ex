@@ -161,7 +161,7 @@ defmodule UmberWeb.AccountLive do
       <header class="page-head wrap account-head">
         <div>
           <p class="label">Your account</p>
-          <h1>{Umber.Accounts.User.first_name(@current_user)}'s bids</h1>
+          <h1>{Umber.Accounts.User.first_name(@current_user)}'s account</h1>
         </div>
         <div class="paddle-card" aria-label={"Paddle #{@current_user.paddle}"}>
           <span class="label">Paddle</span>

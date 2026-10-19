@@ -168,7 +168,7 @@ defmodule UmberWeb.Layouts do
     do: "You've been outbid at #{Umber.Format.money(a)}"
 
   defp notice_head(%{kind: "won", amount: a}), do: "You won, at #{Umber.Format.money(a)}"
-  defp notice_head(%{kind: "closing"}), do: "Five minutes left on a lot you watch"
+  defp notice_head(%{kind: "closing"}), do: "A lot you watch closes in under five minutes"
   defp notice_head(_), do: "Update"
 
   defp notice_action("outbid"), do: "Bid again"

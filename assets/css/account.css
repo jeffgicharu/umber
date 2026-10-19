@@ -54,6 +54,10 @@
   font-size: var(--d-2);
 }
 
+.auth-main > .error-text {
+  margin-bottom: 16px;
+}
+
 .auth-form {
   display: grid;
   gap: 0;
@@ -368,6 +372,7 @@
   border-bottom: 0;
   border-top: 1px solid var(--ink);
   font-weight: 700;
+  vertical-align: baseline;
 }
 
 .invoice-total .serif {

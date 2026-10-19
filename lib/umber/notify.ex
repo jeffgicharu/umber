@@ -69,7 +69,7 @@ defmodule Umber.Notify do
 
   defp title(%{kind: "outbid", amount: a}), do: "Outbid at #{Umber.Format.money(a)}"
   defp title(%{kind: "won", amount: a}), do: "You won, at #{Umber.Format.money(a)}"
-  defp title(%{kind: "closing"}), do: "Five minutes left"
+  defp title(%{kind: "closing"}), do: "Closing in under five minutes"
   defp title(_), do: "Umber"
 
   defp body(n), do: "Lot #{n.lot_number}, #{n.title}."
