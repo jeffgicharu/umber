@@ -27,6 +27,15 @@ defmodule UmberWeb.Endpoint do
     only: UmberWeb.static_paths(),
     raise_on_missing_only: code_reloading?
 
+  # Pictures of the works and the house live outside priv/static, so the
+  # digest step does not copy them into every release. nginx serves them on
+  # the server; this is for development and as a fallback.
+  plug Plug.Static,
+    at: "/images",
+    from: {:umber, "priv/images"},
+    gzip: false,
+    cache_control_for_etags: "public, max-age=2592000"
+
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.
   if code_reloading? do
@@ -35,10 +44,6 @@ defmodule UmberWeb.Endpoint do
     plug Phoenix.CodeReloader
     plug Phoenix.Ecto.CheckRepoStatus, otp_app: :umber
   end
-
-  plug Phoenix.LiveDashboard.RequestLogger,
-    param_key: "request_logger",
-    cookie_key: "request_logger"
 
   plug UmberWeb.RealIP
   plug Plug.RequestId

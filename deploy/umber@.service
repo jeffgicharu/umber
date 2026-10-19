@@ -1,0 +1,43 @@
+[Unit]
+Description=Umber web server, port %i
+After=network.target postgresql.service
+ConditionPathExists=/var/www/umber.jeffgicharu.com/slots/%i/bin/umber
+
+[Service]
+Type=exec
+User=umber
+Group=umber
+WorkingDirectory=/var/www/umber.jeffgicharu.com/shared
+EnvironmentFile=/var/www/umber.jeffgicharu.com/shared/env
+# Local connections only; nginx is the only way in from outside.
+Environment=PORT=%i
+Environment=PHX_SERVER=true
+Environment=RELEASE_TMP=/var/www/umber.jeffgicharu.com/shared/tmp/%i
+Environment=UMBER_UPLOADS_DIR=/var/www/umber.jeffgicharu.com/shared/uploads
+Environment=ERL_CRASH_DUMP=/var/www/umber.jeffgicharu.com/shared/tmp/%i/erl_crash.dump
+ExecStartPre=/bin/mkdir -p /var/www/umber.jeffgicharu.com/shared/tmp/%i
+ExecStart=/var/www/umber.jeffgicharu.com/slots/%i/bin/umber start
+Restart=on-failure
+RestartSec=3
+# On SIGTERM the release stops taking requests, finishes those in hand,
+# hands the market lease back and closes its sockets, so browsers reconnect
+# to the live slot.
+KillSignal=SIGTERM
+TimeoutStopSec=20
+# Two slots run side by side for a few seconds during a release.
+MemoryMax=320M
+MemorySwapMax=0
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectHome=true
+ProtectSystem=strict
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+ReadWritePaths=/var/www/umber.jeffgicharu.com/shared/uploads /var/www/umber.jeffgicharu.com/shared/tmp
+
+[Install]
+WantedBy=multi-user.target

@@ -25,6 +25,25 @@ defmodule UmberWeb.MetaController do
     end
   end
 
+  @doc """
+  The deploy gate's engine check, on the app's own port only (never through
+  nginx): places bids on a lot in a transaction that is rolled back.
+  """
+  def engine(conn, _params) do
+    local? = conn.remote_ip == {127, 0, 0, 1} and get_req_header(conn, "x-real-ip") == []
+
+    cond do
+      not local? ->
+        send_resp(conn, 404, "")
+
+      Umber.Release.engine_check() == :ok ->
+        conn |> put_resp_content_type("text/plain") |> send_resp(200, "engine ok\n")
+
+      true ->
+        conn |> put_resp_content_type("text/plain") |> send_resp(500, "engine failed\n")
+    end
+  end
+
   # Crawlers may fetch pages, so they can read each page's noindex.
   def robots(conn, _params) do
     body = """

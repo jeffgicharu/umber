@@ -29,7 +29,18 @@ defmodule Umber.Application do
   # The market starts last, after the endpoint, and so stops first: it hands
   # its lease back before the copy stops serving.
   defp market do
-    if Application.get_env(:umber, :start_market, true), do: [Umber.Market.Lease], else: []
+    if Application.get_env(:umber, :start_market, true) do
+      [
+        {Registry, keys: :unique, name: Umber.Market.AuctioneerRegistry},
+        {DynamicSupervisor, name: Umber.Market.AuctioneerSupervisor, strategy: :one_for_one},
+        Umber.Market.Scheduler,
+        Umber.Market.SampleBidders,
+        # Last, so it stops first: the lease is handed back before the market's processes go.
+        Umber.Market.Lease
+      ]
+    else
+      []
+    end
   end
 
   # Tell Phoenix to update the endpoint configuration

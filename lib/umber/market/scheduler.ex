@@ -24,8 +24,19 @@ defmodule Umber.Market.Scheduler do
   @impl true
   def init(_opts) do
     send(self(), :tick)
-    {:ok, %{templates: Catalogue.templates() |> Map.new(&{&1["key"], &1}), noticed: MapSet.new()}}
+
+    {:ok,
+     %{
+       templates: Catalogue.templates() |> Map.new(&{&1["key"], &1}),
+       noticed: MapSet.new(),
+       ticked: System.monotonic_time(:millisecond)
+     }}
   end
+
+  # The lease asks this on every renewal; a scheduler that cannot answer is restarted.
+  @impl true
+  def handle_call(:last_tick_age, _from, state),
+    do: {:reply, System.monotonic_time(:millisecond) - state.ticked, state}
 
   @impl true
   def handle_info(:tick, state) do
@@ -33,20 +44,46 @@ defmodule Umber.Market.Scheduler do
     now = DateTime.utc_now()
 
     state =
-      try do
-        ensure_cycles(state, now)
-        open_due_sales(now)
-        tend_open_lots()
-        start_live_sessions(now)
-        close_finished_sales(now)
-        notice_watchers(state, now)
-      rescue
-        e ->
-          Logger.error("market tick failed: " <> Exception.format(:error, e, __STACKTRACE__))
-          state
+      if Umber.Market.Lease.held?() do
+        try do
+          ensure_cycles(state, now)
+          open_due_sales(now)
+          tend_open_lots()
+          start_live_sessions(now)
+          close_finished_sales(now)
+          state = notice_watchers(state, now)
+          clean_up(state, now)
+        rescue
+          e ->
+            Logger.error("market tick failed: " <> Exception.format(:error, e, __STACKTRACE__))
+            state
+        end
+      else
+        stop_auctioneers()
+        state
       end
 
-    {:noreply, state}
+    {:noreply, %{state | ticked: System.monotonic_time(:millisecond)}}
+  end
+
+  @clean_every 600
+
+  defp clean_up(state, now) do
+    last = Map.get(state, :cleaned)
+
+    if is_nil(last) or DateTime.diff(now, last, :second) >= @clean_every do
+      Umber.Market.Cleanup.run(now)
+      Map.put(state, :cleaned, now)
+    else
+      state
+    end
+  end
+
+  # Another copy holds the market now; its auctioneers run there.
+  defp stop_auctioneers do
+    for {_, pid, _, _} <- DynamicSupervisor.which_children(Umber.Market.AuctioneerSupervisor) do
+      DynamicSupervisor.terminate_child(Umber.Market.AuctioneerSupervisor, pid)
+    end
   end
 
   defp ensure_cycles(state, now) do

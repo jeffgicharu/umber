@@ -406,7 +406,8 @@
 
 .rostrum-amount {
   margin-top: 4px;
-  font-size: clamp(2.25rem, 1.6rem + 2vw, 3.5rem);
+  white-space: nowrap;
+  font-size: clamp(1.9rem, 1.2rem + 1.6vw, 3rem);
   line-height: 1;
   color: var(--brass-hi);
 }
@@ -424,8 +425,9 @@
 }
 
 .rostrum-asking .serif {
+  flex: 1;
   font-size: var(--t-xl);
-  min-width: 9ch;
+  white-space: nowrap;
   text-align: center;
 }
 

@@ -27,6 +27,7 @@ defmodule UmberWeb.Router do
     pipe_through :plain
 
     get "/healthz", MetaController, :healthz
+    get "/healthz/engine", MetaController, :engine
     get "/robots.txt", MetaController, :robots
     get "/sitemap.xml", MetaController, :sitemap
     get "/manifest.webmanifest", MetaController, :manifest
@@ -100,16 +101,6 @@ defmodule UmberWeb.Router do
       live "/bidders", BiddersLive, :index
       live "/invoices", InvoicesLive, :index
       live "/consignments", ConsignmentsLive, :index
-    end
-  end
-
-  # LiveDashboard in development only.
-  if Application.compile_env(:umber, :dev_routes) do
-    import Phoenix.LiveDashboard.Router
-
-    scope "/dev" do
-      pipe_through :browser
-      live_dashboard "/dashboard", metrics: UmberWeb.Telemetry
     end
   end
 end

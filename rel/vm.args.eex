@@ -1,0 +1,10 @@
+## Flags for the Erlang VM, read when the release starts.
+
+## The server's two processors are shared by several sites: schedulers sleep
+## when idle instead of spinning, so an idle Umber costs no CPU.
++sbwt none
++sbwtdcpu none
++sbwtdio none
+
+## Enough processes for a busy saleroom, with room to spare.
++P 262144

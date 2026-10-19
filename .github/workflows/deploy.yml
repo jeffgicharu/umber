@@ -1,0 +1,203 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# One deploy at a time. A newer push waits for the running deploy to finish.
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  # The release carries its own Erlang, built for Ubuntu 22.04 as the server
+  # runs, from the build tested on the server's processor.
+  OTP_VERSION: OTP-29.1.2
+  OTP_SHA256: 1df9e6285b4d14319a789176db60c273131abebdfa6b5474a084dba49b0e54a2
+  ELIXIR_VERSION: v1.20.4-otp-29
+  ELIXIR_SHA256: 7863c546cda13fecc949e562e326042451dacf8fd8698a36783cb71eeb223b46
+
+jobs:
+  build:
+    name: Test and build
+    runs-on: ubuntu-24.04
+    container: ubuntu:22.04
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: umber
+          POSTGRES_PASSWORD: umber
+          POSTGRES_DB: umber_test
+        options: >-
+          --health-cmd "pg_isready -U umber"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      LANG: C.UTF-8
+      MIX_ENV: test
+      DATABASE_URL: ecto://umber:umber@postgres/umber_test
+    steps:
+      - name: Install system packages
+        run: |
+          apt-get update -qq
+          DEBIAN_FRONTEND=noninteractive apt-get install -y -qq ca-certificates curl unzip git binutils postgresql-client >/dev/null
+
+      - uses: actions/checkout@v7
+
+      - name: Install Erlang and Elixir
+        run: |
+          curl -fsS -o /tmp/otp.tar.gz "https://builds.hex.pm/builds/otp/ubuntu-22.04/$OTP_VERSION.tar.gz"
+          echo "$OTP_SHA256  /tmp/otp.tar.gz" | sha256sum -c -
+          mkdir -p /opt/otp && tar -xzf /tmp/otp.tar.gz -C /opt/otp --strip-components=1
+          (cd /opt/otp && ./Install -minimal /opt/otp >/dev/null)
+          curl -fsS -o /tmp/elixir.zip "https://builds.hex.pm/builds/elixir/$ELIXIR_VERSION.zip"
+          echo "$ELIXIR_SHA256  /tmp/elixir.zip" | sha256sum -c -
+          mkdir -p /opt/elixir && unzip -q /tmp/elixir.zip -d /opt/elixir
+          echo "/opt/elixir/bin" >> "$GITHUB_PATH"
+          echo "/opt/otp/bin" >> "$GITHUB_PATH"
+
+      - name: Fetch dependencies
+        run: |
+          mix local.hex --force
+          mix local.rebar --force
+          mix deps.get
+
+      - name: Check formatting
+        run: mix format --check-formatted
+
+      - name: Compile without warnings
+        run: mix compile --warnings-as-errors
+
+      - name: Test
+        run: mix test
+
+      - name: Build the release
+        env:
+          MIX_ENV: prod
+        run: |
+          mix deps.get --only prod
+          mix compile
+          mix assets.setup
+          mix assets.deploy
+          mix release --overwrite
+          mkdir -p _release
+          cp -a _build/prod/rel/umber/. _release/
+          # Erlang's runtime ships with its debug symbols; the server does not need them.
+          strip --strip-unneeded _release/erts-*/bin/beam.smp
+          cp deploy/unavailable.html _release/
+          printf '%s' "$GITHUB_SHA" > _release/REVISION
+          du -sh _release
+
+      # No native code in the release: a .so built for a newer processor would not load on the server.
+      - name: Check for native modules
+        run: |
+          found="$(find _release/lib -name '*.so' ! -path '*/erts-*' ! -path '*/crypto-*' ! -path '*/asn1-*' ! -path '*/runtime_tools-*' ! -path '*/os_mon-*' ! -path '*/inets-*' ! -path '*/ssl-*' ! -path '*/public_key-*' || true)"
+          if [ -n "$found" ]; then echo "Native modules found:"; echo "$found"; exit 1; fi
+          echo "none outside Erlang's own"
+
+      # The same gate the server runs, here first: start the release against a
+      # fresh database and walk it.
+      - name: Walk the release
+        env:
+          DATABASE_URL: ecto://umber:umber@postgres/umber_release
+        run: |
+          psql "postgres://umber:umber@postgres/umber_test" -c "CREATE DATABASE umber_release"
+          export SECRET_KEY_BASE="$(head -c 48 /dev/urandom | base64 | tr -d '\n')"
+          export PHX_HOST=umber.jeffgicharu.com PORT=8500 PHX_SERVER=true RELEASE_TMP=/tmp/umber-rel
+          export UMBER_UPLOADS_DIR=/tmp/umber-uploads
+          mkdir -p /tmp/umber-rel /tmp/umber-uploads
+          _release/bin/umber eval "Umber.Release.flavor()"
+          _release/bin/umber eval "Umber.Release.migrate()"
+          _release/bin/umber eval "Umber.Release.seed()"
+          _release/bin/umber start > serve.log 2>&1 &
+          for i in $(seq 1 60); do curl -fs http://127.0.0.1:8500/healthz >/dev/null && break; sleep 1; done
+          status=0
+          _release/bin/umber eval "Umber.Release.check(\"http://127.0.0.1:8500\", \"$GITHUB_SHA\")" || status=$?
+          # Distribution is off, so the release stops on SIGTERM, as systemd stops it.
+          kill -TERM %1 || true
+          wait %1 || true
+          echo "--- server log"; tail -n 80 serve.log
+          exit $status
+
+      - name: Pack the release
+        run: tar -czf release.tar.gz -C _release .
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: release
+          path: release.tar.gz
+          if-no-files-found: error
+          retention-days: 7
+
+  deploy:
+    name: Deploy to umber.jeffgicharu.com
+    needs: build
+    runs-on: ubuntu-24.04
+    environment:
+      name: production
+      url: https://umber.jeffgicharu.com
+    env:
+      VPS_HOST: ${{ secrets.VPS_HOST }}
+      VPS_USER: ${{ secrets.VPS_USER }}
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: release
+
+      - name: Unpack the release
+        run: mkdir release && tar -xzf release.tar.gz -C release
+
+      - name: Configure SSH
+        env:
+          UMBER_UPLOAD_KEY: ${{ secrets.UMBER_UPLOAD_KEY }}
+          UMBER_ACTIVATE_KEY: ${{ secrets.UMBER_ACTIVATE_KEY }}
+          VPS_KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$UMBER_UPLOAD_KEY" > ~/.ssh/upload_key
+          printf '%s\n' "$UMBER_ACTIVATE_KEY" > ~/.ssh/activate_key
+          chmod 600 ~/.ssh/upload_key ~/.ssh/activate_key
+          printf '%s\n' "$VPS_KNOWN_HOSTS" > ~/.ssh/known_hosts
+
+      # The upload key can only write into the releases directory, so the
+      # remote path is relative to it. Only the one key is offered, so a
+      # wrong key never counts against the server's login limit.
+      - name: Upload the release
+        run: |
+          rsync -az --delete --delay-updates \
+            -e "ssh -i $HOME/.ssh/upload_key -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes" \
+            release/ "$VPS_USER@$VPS_HOST:./$GITHUB_SHA/"
+
+      # The activate key can run one script on the server and nothing else. It
+      # starts the release beside the live one, makes it pass the same walk
+      # there, and only then sends visitors to it.
+      - name: Activate the release
+        run: ssh -i "$HOME/.ssh/activate_key" -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes "$VPS_USER@$VPS_HOST" "$GITHUB_SHA"
+
+      - name: Check the live site serves this release
+        run: |
+          for attempt in 1 2 3 4 5 6; do
+            if curl -fsSI https://umber.jeffgicharu.com/healthz | grep -qi "^x-release: $GITHUB_SHA"; then
+              echo "umber.jeffgicharu.com is serving ${GITHUB_SHA::7}"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "umber.jeffgicharu.com is not serving ${GITHUB_SHA::7}"
+          exit 1
+
+      # From outside, through Cloudflare, as a visitor arrives.
+      - name: Check the pages load through Cloudflare
+        run: |
+          for path in / /sales /results /artists /buy /sell /register /signin /live /robots.txt /sitemap.xml; do
+            status=$(curl -sS -o /dev/null -w '%{http_code}' -L -A "Mozilla/5.0 (deploy check)" "https://umber.jeffgicharu.com$path" || echo 000)
+            echo "$status $path"
+            [ "$status" = "200" ] || failed=1
+          done
+          [ -z "${failed:-}" ]

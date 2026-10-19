@@ -20,8 +20,8 @@ from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 FONTS = ROOT / "priv" / "static" / "fonts"
-OUT = ROOT / "priv" / "static" / "images" / "brand"
-SHARE = ROOT / "priv" / "static" / "images" / "share"
+OUT = ROOT / "priv" / "images" / "brand"
+SHARE = ROOT / "priv" / "images" / "share"
 MASTERS = ROOT / "generated" / "masters"
 
 NIGHT = "#120d0a"

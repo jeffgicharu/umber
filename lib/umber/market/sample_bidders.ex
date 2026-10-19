@@ -33,7 +33,7 @@ defmodule Umber.Market.SampleBidders do
     Process.send_after(self(), :tick, @tick)
     state = %{state | bots: state.bots || load_bots()}
 
-    if state.bots != [] do
+    if state.bots != [] and Umber.Market.Lease.held?() do
       try do
         now = DateTime.utc_now()
         Enum.each(open_lots(), &maybe_bid(&1, state.bots, now))

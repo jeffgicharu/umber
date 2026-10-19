@@ -23,6 +23,12 @@ if config_env() == :dev do
 end
 
 if config_env() == :prod do
+  # The commit a release was built from, written beside it as REVISION.
+  release_revision = fn ->
+    path = Path.join([System.get_env("RELEASE_ROOT", "."), "REVISION"])
+    if File.exists?(path), do: path |> File.read!() |> String.trim(), else: "unknown"
+  end
+
   database_url =
     System.get_env("DATABASE_URL") ||
       raise "environment variable DATABASE_URL is missing"
@@ -46,7 +52,11 @@ if config_env() == :prod do
     check_origin: ["https://#{host}"],
     secret_key_base: secret_key_base
 
-  config :umber, :release, System.get_env("RELEASE_REVISION", "unknown")
+  config :umber, :release, System.get_env("RELEASE_REVISION") || release_revision.()
+
+  if dir = System.get_env("UMBER_UPLOADS_DIR") do
+    config :umber, :uploads_dir, dir
+  end
 
   if subject = System.get_env("VAPID_SUBJECT") do
     config :umber, :vapid,

@@ -2,8 +2,8 @@
 
 Reads every master in generated/masters/ and writes AVIF and WebP at three
 widths, plus one 1600 px JPEG for sharing previews, to
-priv/static/images/works/ (lots and their second views) and
-priv/static/images/photos/ (the house). Then lists what it built, with each
+priv/images/works/ (lots and their second views) and
+priv/images/photos/ (the house). Then lists what it built, with each
 picture's size, in priv/catalogue/images.json, which the site reads.
 
     python3 -I scripts/build_images.py          # build what is new or changed
@@ -18,8 +18,8 @@ from PIL import Image, ImageOps
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 MASTERS = ROOT / "generated" / "masters"
-OUT_WORKS = ROOT / "priv" / "static" / "images" / "works"
-OUT_PHOTOS = ROOT / "priv" / "static" / "images" / "photos"
+OUT_WORKS = ROOT / "priv" / "images" / "works"
+OUT_PHOTOS = ROOT / "priv" / "images" / "photos"
 MANIFEST = ROOT / "priv" / "catalogue" / "images.json"
 
 WIDTHS = [480, 960, 1600]

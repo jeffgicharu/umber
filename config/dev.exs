@@ -29,9 +29,6 @@ config :umber, UmberWeb.Endpoint,
     esbuild_css: {Esbuild, :install_and_run, [:umber_css, ~w(--sourcemap=inline --watch)]}
   ]
 
-# Enable dev routes for the dashboard
-config :umber, dev_routes: true
-
 # The guest staff link for trying the desk locally: /desk/try?key=local-desk
 config :umber, :staff_trial_key, "local-desk"
 
