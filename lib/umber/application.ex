@@ -10,6 +10,7 @@ defmodule Umber.Application do
     children =
       [
         UmberWeb.Telemetry,
+        Umber.MemoryWatch,
         Umber.Repo,
         {Phoenix.PubSub, name: Umber.PubSub},
         Umber.Events.Listener,

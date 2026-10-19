@@ -15,8 +15,29 @@ defmodule Umber.Events do
 
   def channel, do: @channel
 
-  def subscribe(topic), do: Phoenix.PubSub.subscribe(Umber.PubSub, topic)
-  def unsubscribe(topic), do: Phoenix.PubSub.unsubscribe(Umber.PubSub, topic)
+  @doc """
+  Subscribes the calling process to `topic`, once. Phoenix.PubSub registers a
+  process again each time it subscribes, so a page that subscribed on every
+  reload received each broadcast once per reload, reloaded once per copy and
+  subscribed again: its mailbox doubled with every event. Subscribing twice
+  is now a no-op.
+  """
+  def subscribe(topic) do
+    key = {__MODULE__, :subscribed, topic}
+
+    if Process.get(key) do
+      :ok
+    else
+      :ok = Phoenix.PubSub.subscribe(Umber.PubSub, topic)
+      Process.put(key, true)
+      :ok
+    end
+  end
+
+  def unsubscribe(topic) do
+    Process.delete({__MODULE__, :subscribed, topic})
+    Phoenix.PubSub.unsubscribe(Umber.PubSub, topic)
+  end
 
   @doc "Delivers `message` to `topic` here and on every other running copy."
   def broadcast(topic, message) do
