@@ -127,8 +127,8 @@ static_src="$(echo "$release"/lib/umber-*/priv/static)"
 images_src="$(echo "$release"/lib/umber-*/priv/images)"
 mkdir -p "$STATIC/assets" "$STATIC/images" "$STATIC/fonts"
 rsync -a --ignore-existing "$static_src/assets/" "$STATIC/assets/"
-rsync -a "$images_src/" "$STATIC/images/"
-rsync -a "$static_src/fonts/" "$STATIC/fonts/"
+rsync -a --ignore-existing "$images_src/" "$STATIC/images/"
+rsync -a --ignore-existing "$static_src/fonts/" "$STATIC/fonts/"
 
 echo "Starting release ${release_id:0:7} on port $idle_port"
 sudo systemctl stop "umber@$idle_port.service" 2>/dev/null || true
@@ -228,15 +228,15 @@ if ! serves_the_release; then
     go_back "Release ${release_id:0:7} did not serve its pages."
 fi
 
-# Live and checked: now the shared pictures and fonts can match this
-# release exactly, and its unavailable page can take over.
-rsync -a --delete "$images_src/" "$STATIC/images/"
-rsync -a --delete "$static_src/fonts/" "$STATIC/fonts/"
-cp "$release/unavailable.html" "$BASE/shared/pages/unavailable.html"
-
 # The slot that is live is the one that starts when the server boots.
 sudo systemctl enable "umber@$idle_port.service" >/dev/null 2>&1 || true
 sudo systemctl disable "umber@$live_port.service" >/dev/null 2>&1 || true
+
+# Live and checked: now the shared pictures and fonts can match this
+# release exactly, changed files included, and its unavailable page can take over.
+rsync -a --delete "$images_src/" "$STATIC/images/"
+rsync -a --delete "$static_src/fonts/" "$STATIC/fonts/"
+cp "$release/unavailable.html" "$BASE/shared/pages/unavailable.html"
 
 # Requests in hand on the old release are given time to finish. Stopping it
 # hands the market lease to the new release and closes its sockets; those
