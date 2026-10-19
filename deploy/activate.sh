@@ -42,6 +42,19 @@ fi
 
 release="$BASE/releases/$release_id"
 
+if [[ ! -d "$release" ]]; then
+    echo "Release $release_id has not been uploaded." >&2
+    exit 66
+fi
+
+# This script runs as deploy, which can become root, and it copies files out
+# of the release that nginx then serves. A symlink could point anywhere, so a
+# release holding one is refused before anything in it is read.
+if [[ -n "$(find "$release" -type l -print -quit)" ]]; then
+    echo "Release $release_id contains a symlink. Refusing it." >&2
+    exit 66
+fi
+
 for file in bin/umber REVISION unavailable.html; do
     if [[ ! -f "$release/$file" ]]; then
         echo "Release $release_id has not been uploaded completely ($file is missing)." >&2
@@ -104,15 +117,18 @@ as_app eval "Umber.Release.migrate()"
 echo "Loading the catalogue"
 as_app eval "Umber.Release.seed()"
 
-# Fingerprinted scripts and styles are kept for every release; pictures and
-# fonts are refreshed from this release.
+# This release's files are added beside the live release's, never in place
+# of them: until the switch, visitors still use the release before. Files the
+# new release no longer has are removed only after it has gone live.
+# Fingerprinted scripts and styles are kept for every release still on disk.
+# A font that changes gets a new name, since fonts are cached for a year.
 echo "Sharing this release's scripts, styles, fonts and pictures"
 static_src="$(echo "$release"/lib/umber-*/priv/static)"
-mkdir -p "$STATIC/assets"
+images_src="$(echo "$release"/lib/umber-*/priv/images)"
+mkdir -p "$STATIC/assets" "$STATIC/images" "$STATIC/fonts"
 rsync -a --ignore-existing "$static_src/assets/" "$STATIC/assets/"
-rsync -a --delete "$static_src/../images/" "$STATIC/images/"
-rsync -a --delete "$static_src/fonts/" "$STATIC/fonts/"
-cp "$release/unavailable.html" "$BASE/shared/pages/unavailable.html"
+rsync -a "$images_src/" "$STATIC/images/"
+rsync -a "$static_src/fonts/" "$STATIC/fonts/"
 
 echo "Starting release ${release_id:0:7} on port $idle_port"
 sudo systemctl stop "umber@$idle_port.service" 2>/dev/null || true
@@ -211,6 +227,12 @@ echo "Checking the live site"
 if ! serves_the_release; then
     go_back "Release ${release_id:0:7} did not serve its pages."
 fi
+
+# Live and checked: now the shared pictures and fonts can match this
+# release exactly, and its unavailable page can take over.
+rsync -a --delete "$images_src/" "$STATIC/images/"
+rsync -a --delete "$static_src/fonts/" "$STATIC/fonts/"
+cp "$release/unavailable.html" "$BASE/shared/pages/unavailable.html"
 
 # The slot that is live is the one that starts when the server boots.
 sudo systemctl enable "umber@$idle_port.service" >/dev/null 2>&1 || true

@@ -42,24 +42,73 @@ sudo install -d -o umber -g umber -m 750 "$BASE/shared/uploads" "$BASE/shared/tm
 cp "$HERE/unavailable.html" "$BASE/shared/pages/unavailable.html"
 ls -ld "$BASE" "$BASE"/* "$BASE"/shared/*
 
-step "PostgreSQL"
+step "Database and settings"
 role_exists="$(sudo -u postgres psql -tAc "SELECT 1 FROM pg_roles WHERE rolname = 'umber'")"
 db_exists="$(sudo -u postgres psql -tAc "SELECT 1 FROM pg_database WHERE datname = 'umber'")"
-db_password=""
-if [[ "$role_exists" == "1" ]]; then
-    echo "role umber exists"
-    if ! sudo test -f "$BASE/shared/env"; then
-        echo "The role exists but the settings file does not; its password is unknown. Stopping." >&2
+
+if sudo test -f "$BASE/shared/env"; then
+    echo "settings file exists; left as it is"
+    if [[ "$role_exists" != "1" ]]; then
+        echo "The settings file exists but the role umber does not. Stopping." >&2
         exit 70
     fi
 else
+    # Every value is worked out before anything is created, so a failure here
+    # leaves nothing behind that the settings file would not record.
+    trial_key="$(tr -d '\n' < "$HERE/staff-trial-key")"
+    if [[ ! "$trial_key" =~ ^[A-Za-z0-9_-]{20,}$ ]]; then
+        echo "The staff trial key must be 20 or more letters, digits, - or _." >&2
+        exit 64
+    fi
+
+    # VAPID keys for push notices: a P-256 key pair, as raw base64url.
+    keydir="$(mktemp -d)"
+    openssl ecparam -name prime256v1 -genkey -noout -out "$keydir/vapid.pem" 2>/dev/null
+    vapid_private="$(openssl ec -in "$keydir/vapid.pem" -outform DER 2>/dev/null | tail -c +8 | head -c 32 | basenc --base64url | tr -d '=\n')"
+    vapid_public="$(openssl ec -in "$keydir/vapid.pem" -pubout -outform DER 2>/dev/null | tail -c 65 | basenc --base64url | tr -d '=\n')"
+    rm -rf -- "$keydir"
+    if [[ ${#vapid_private} -ne 43 || ${#vapid_public} -ne 87 ]]; then
+        echo "The VAPID keys did not come out at the expected lengths. Stopping." >&2
+        exit 70
+    fi
+
+    # Hex only, so every line is safe to read in a shell.
     db_password="$(openssl rand -hex 24)"
+    secret_key_base="$(openssl rand -hex 64)"
+    release_cookie="$(openssl rand -hex 32)"
+
     # The password goes in on standard input, never on a command line.
-    sudo -u postgres psql -v ON_ERROR_STOP=1 -q <<SQL
+    if [[ "$role_exists" == "1" ]]; then
+        # Left by an earlier run that stopped before writing the settings;
+        # nothing uses the role yet, so it gets a fresh password.
+        sudo -u postgres psql -v ON_ERROR_STOP=1 -q <<SQL
+ALTER ROLE umber WITH LOGIN PASSWORD '$db_password' CONNECTION LIMIT 20;
+SQL
+        echo "role umber had no settings file; gave it a new password"
+    else
+        sudo -u postgres psql -v ON_ERROR_STOP=1 -q <<SQL
 CREATE ROLE umber LOGIN PASSWORD '$db_password' CONNECTION LIMIT 20;
 SQL
-    echo "created role umber (connection limit 20)"
+        echo "created role umber (connection limit 20)"
+    fi
+
+    # Created with its final owner and mode before anything is written into it.
+    sudo install -m 640 -o root -g umber /dev/null "$BASE/shared/env"
+    {
+        echo "PHX_HOST=umber.jeffgicharu.com"
+        echo "DATABASE_URL=ecto://umber:$db_password@127.0.0.1/umber"
+        echo "POOL_SIZE=6"
+        echo "SECRET_KEY_BASE=$secret_key_base"
+        echo "RELEASE_COOKIE=$release_cookie"
+        echo "VAPID_SUBJECT=https://umber.jeffgicharu.com"
+        echo "VAPID_PUBLIC_KEY=$vapid_public"
+        echo "VAPID_PRIVATE_KEY=$vapid_private"
+        echo "UMBER_STAFF_TRIAL_KEY=$trial_key"
+    } | sudo tee -a "$BASE/shared/env" >/dev/null
+    unset db_password secret_key_base release_cookie vapid_private vapid_public trial_key
+    echo "wrote the settings file"
 fi
+
 if [[ "$db_exists" == "1" ]]; then
     echo "database umber exists"
 else
@@ -68,35 +117,6 @@ else
     echo "created database umber, owned by umber"
 fi
 sudo -u postgres psql -tAc "SELECT rolname, rolconnlimit FROM pg_roles WHERE rolname = 'umber'"
-
-step "Settings"
-if sudo test -f "$BASE/shared/env"; then
-    echo "settings file exists; left as it is"
-else
-    # VAPID keys for push notices: a P-256 key pair, as base64url, raw.
-    keydir="$(mktemp -d)"
-    openssl ecparam -name prime256v1 -genkey -noout -out "$keydir/vapid.pem" 2>/dev/null
-    vapid_private="$(openssl ec -in "$keydir/vapid.pem" -outform DER 2>/dev/null | tail -c +8 | head -c 32 | basenc --base64url | tr -d '=\n')"
-    vapid_public="$(openssl ec -in "$keydir/vapid.pem" -pubout -outform DER 2>/dev/null | tail -c 65 | basenc --base64url | tr -d '=\n')"
-    rm -rf -- "$keydir"
-    trial_key="$(tr -d '\n' < "$HERE/staff-trial-key")"
-
-    # Created with its final owner and mode before anything is written into it.
-    sudo install -m 640 -o root -g umber /dev/null "$BASE/shared/env"
-    {
-        echo "PHX_HOST=umber.jeffgicharu.com"
-        echo "DATABASE_URL=ecto://umber:$db_password@127.0.0.1/umber"
-        echo "POOL_SIZE=6"
-        echo "SECRET_KEY_BASE=$(openssl rand -base64 48 | tr -d '\n')"
-        echo "RELEASE_COOKIE=$(openssl rand -hex 32)"
-        echo "VAPID_SUBJECT=https://umber.jeffgicharu.com"
-        echo "VAPID_PUBLIC_KEY=$vapid_public"
-        echo "VAPID_PRIVATE_KEY=$vapid_private"
-        echo "UMBER_STAFF_TRIAL_KEY=$trial_key"
-    } | sudo tee -a "$BASE/shared/env" >/dev/null
-    unset db_password vapid_private vapid_public trial_key
-    echo "wrote the settings file"
-fi
 sudo ls -l "$BASE/shared/env"
 echo "settings names: $(sudo cut -d= -f1 "$BASE/shared/env" | tr '\n' ' ')"
 
