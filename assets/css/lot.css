@@ -137,6 +137,7 @@
 }
 
 .lot-caption .dates {
+  text-transform: none;
   font-weight: 500;
   color: var(--ink-3);
   letter-spacing: 0.06em;

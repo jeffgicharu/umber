@@ -347,7 +347,7 @@ defmodule UmberWeb.LotLive do
       <div class="wrap">
         <nav class="crumbs" aria-label="Breadcrumb">
           <a href={~p"/sales"}>Sales</a><span class="sep">/</span>
-          <a href={Sale.path(@sale)}>Sale {@sale.number}, {@sale.title}</a><span class="sep">/</span>
+          <a href={Sale.path(@sale)}>Sale {@sale.number}<span class="crumb-long">, {@sale.title}</span></a><span class="sep">/</span>
           <span>Lot {@lot.number}</span>
         </nav>
       </div>
