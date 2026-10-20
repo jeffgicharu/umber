@@ -87,7 +87,7 @@ defmodule UmberWeb.Desk.ConsignmentsLive do
               <.link patch={
                 ~p"/desk/consignments?#{Enum.reject([status: @status, open: c.id], fn {_, v} -> is_nil(v) end)}"
               }>
-                <strong>{c.artist_name}</strong>{if c.title, do: ", #{c.title}"}
+                <span><strong>{c.artist_name}</strong>{if c.title, do: ", #{c.title}"}</span>
                 <span class="muted">{c.name} · {Format.short_datetime(c.inserted_at)} · {Format.count(
                   length(c.photos),
                   "photo",

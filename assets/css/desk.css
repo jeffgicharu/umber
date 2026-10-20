@@ -193,6 +193,18 @@
   justify-content: flex-end;
 }
 
+/* In a table the cell has to stay a cell, or its rule falls out of line
+   with the rest of the row; the buttons sit side by side instead. */
+td.desk-row-actions {
+  display: table-cell;
+  text-align: right;
+  white-space: nowrap;
+}
+
+td.desk-row-actions > * + * {
+  margin-left: 8px;
+}
+
 .desk-list.selectable a {
   display: grid;
   gap: 2px;
@@ -210,6 +222,11 @@
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
   gap: 20px;
   align-items: start;
+}
+
+/* A running sale has no details form, so its lots take the full width. */
+.desk-split > :only-child {
+  grid-column: 1 / -1;
 }
 
 .desk-search .input {
