@@ -333,6 +333,12 @@
   overflow: hidden;
 }
 
+/* The picture element takes the box's height too, or a studio photograph
+   fitted into a taller card sits at the top of it instead of the middle. */
+.work-image picture {
+  height: 100%;
+}
+
 .work-image img {
   width: 100%;
   height: 100%;
