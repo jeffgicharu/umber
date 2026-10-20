@@ -297,7 +297,7 @@
   display: grid;
   grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
   gap: clamp(32px, 5vw, 80px);
-  align-items: end;
+  align-items: center;
 }
 
 .feature h2 {

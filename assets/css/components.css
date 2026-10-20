@@ -727,9 +727,25 @@
 
 /* Studio photographs: the object and its backdrop sit on the same colour,
    so there is no box around them. */
+.lot-card .frame {
+  overflow: hidden;
+}
+
+/* A studio photograph fills its card and fits inside it whatever its
+   proportion: the card is the same colour as the backdrop, so there is no seam. */
 .lot-card .frame:has(.work-image.studio) {
   background: var(--backdrop);
   padding: 0;
+}
+
+.lot-card .frame .work-image.studio {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: auto !important;
+}
+
+.lot-card .frame .work-image.studio img {
+  object-fit: contain;
 }
 
 .lot-card:hover .frame:has(.work-image.studio) {
