@@ -131,4 +131,20 @@ defmodule Umber.Auctions.TimedTest do
       assert Timed.close(lot.id, later) == {:ok, :already_closed}
     end
   end
+
+  describe "the amounts offered for a maximum" do
+    test "start at the next bid for a bidder who has not left one" do
+      assert hd(Umber.Auctions.max_choices(lot(), bidder())) == 100_000
+    end
+
+    test "start above the bidder's own maximum, since a maximum can only be raised" do
+      lot = lot()
+      user = bidder()
+      assert {:ok, _} = Timed.place(lot.id, user, :max, 150_000)
+
+      choices = Umber.Auctions.max_choices(Repo.get!(Lot, lot.id), user)
+      assert hd(choices) == 160_000
+      assert Enum.all?(choices, &(&1 > 150_000))
+    end
+  end
 end

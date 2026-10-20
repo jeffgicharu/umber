@@ -21,11 +21,17 @@ defmodule Umber.Auctions do
 
   def own_max(_, _), do: nil
 
-  @doc "The amounts a bidder can choose for a maximum: the next twelve steps."
+  @doc """
+  The amounts a bidder can choose for a maximum: the next 24 steps above both
+  the current bid and any maximum they have already left, within their limit.
+  A maximum can only be raised, so lower amounts are never offered.
+  """
   def max_choices(%Lot{} = lot, %User{} = user) do
     start = Increments.next(lot.current_bid, lot.opening_bid)
+    own = own_max(lot, user) || 0
 
     Stream.iterate(start, &(&1 + Increments.step(&1)))
+    |> Stream.filter(&(&1 > own))
     |> Enum.take(24)
     |> Enum.take_while(&(&1 <= user.bid_limit))
   end
