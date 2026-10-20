@@ -136,10 +136,15 @@
   white-space: nowrap;
 }
 
+/* The number and the word share one line of text, so they share a baseline. */
 .account-link .paddle {
   font-family: var(--serif);
   font-size: 0.95rem;
   font-variant-numeric: lining-nums;
+}
+
+.account-link .who {
+  margin-left: 8px;
 }
 
 .menu-button {

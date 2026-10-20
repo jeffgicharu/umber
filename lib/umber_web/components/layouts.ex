@@ -46,7 +46,7 @@ defmodule UmberWeb.Layouts do
                   href={~p"/account"}
                   aria-label={"Your account, paddle #{@current_user.paddle}"}
                 >
-                  <span class="paddle">{@current_user.paddle}</span><span class="who">Account</span>
+                  <span><span class="paddle">{@current_user.paddle}</span><span class="who">Account</span></span>
                 </a>
               <% true -> %>
                 <a class="account-link" href={~p"/signin"}>Sign in</a>
