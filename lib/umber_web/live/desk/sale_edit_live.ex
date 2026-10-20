@@ -197,7 +197,12 @@ defmodule UmberWeb.Desk.SaleEditLive do
           <h1>{@sale.title || "New sale"}</h1>
         </div>
         <div class="desk-row-actions">
-          <a :if={@sale.published} class="btn ghost" href={Sale.path(@sale)} target="_blank">On the website</a>
+          <a
+            :if={@sale.id && @sale.published}
+            class="btn ghost"
+            href={Sale.path(@sale)}
+            target="_blank"
+          >On the website</a>
           <a
             :if={@sale.id && Sale.live?(@sale) && @sale.status in ["upcoming", "live"]}
             class="btn"
@@ -256,7 +261,7 @@ defmodule UmberWeb.Desk.SaleEditLive do
               value={eat_input(Phoenix.HTML.Form.input_value(@form, :starts_at))}
             />
           <% else %>
-            <div class="field-pair">
+            <div class="field-pair dates">
               <.input
                 field={@form[:opens_at]}
                 type="datetime-local"

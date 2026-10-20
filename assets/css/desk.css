@@ -229,6 +229,16 @@ td.desk-row-actions > * + * {
   grid-column: 1 / -1;
 }
 
+/* A date and time field needs about 250 px, so beside the lots the two dates
+   go one above the other instead of running out of the card. */
+.desk-split .field-pair.dates {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.desk-split .field-pair.dates > .field + .field {
+  margin-top: 18px;
+}
+
 .desk-search .input {
   width: min(320px, 70vw);
 }
