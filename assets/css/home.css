@@ -178,10 +178,15 @@
 
 /* Lots closing now: a rail that scrolls sideways inside itself */
 
+/* Snapping aligns cards to the page margin, not the rail's edge: without the
+   scroll padding the browser snapped the first card flush to the screen edge
+   whenever the rail's lots changed. */
 .rail {
+  --rail-inset: max(var(--gutter), calc((100vw - var(--wrap)) / 2 + var(--gutter)));
   overflow-x: auto;
   overscroll-behavior-x: contain;
   scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--rail-inset);
   scrollbar-width: thin;
   padding-bottom: 12px;
 }
@@ -194,7 +199,7 @@
   display: flex;
   gap: clamp(20px, 2.4vw, 36px);
   width: max-content;
-  padding-inline: max(var(--gutter), calc((100vw - var(--wrap)) / 2 + var(--gutter)));
+  padding-inline: var(--rail-inset);
 }
 
 .rail-item {
