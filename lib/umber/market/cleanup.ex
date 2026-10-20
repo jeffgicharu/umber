@@ -7,7 +7,8 @@ defmodule Umber.Market.Cleanup do
       visitor won a lot in them; those stay eight days, with their invoices.
     * Visitors' accounts go seven days after they were last seen, with their
       bids, watches and invoices.
-    * Guest staff accounts go when their 24 hours are up.
+    * Guest staff accounts go when their 24 hours are up, with the draft
+      sales they made.
     * Consignment enquiries, and their photographs, go after seven days.
 
   The house's own past sales, its catalogue and its sample bidders are never touched.
@@ -80,10 +81,15 @@ defmodule Umber.Market.Cleanup do
   end
 
   defp expired_staff(now) do
-    {n, _} =
-      from(u in User, where: u.kind == "staff" and u.trial and u.expires_at < ^now)
-      |> Repo.delete_all()
+    expired =
+      from(u in User, where: u.kind == "staff" and u.trial and u.expires_at < ^now, select: u.id)
 
+    # A guest's drafts were only theirs to try out, so they go with the account
+    # (their lots with them); otherwise they would stay on the desk for good.
+    from(s in Sale, where: s.status == "draft" and s.created_by_id in subquery(expired))
+    |> Repo.delete_all()
+
+    {n, _} = from(u in User, where: u.id in subquery(expired)) |> Repo.delete_all()
     n
   end
 

@@ -64,4 +64,29 @@ defmodule Umber.Market.CleanupTest do
     assert Repo.get(User, bot.id)
     refute Repo.get(User, guest.id)
   end
+
+  test "an expired guest's draft sales go with the account; a current guest's stay" do
+    now = DateTime.utc_now()
+    {:ok, gone} = Umber.Accounts.create_trial_staff()
+    gone |> Ecto.Changeset.change(expires_at: DateTime.add(now, -60, :second)) |> Repo.update!()
+    {:ok, here} = Umber.Accounts.create_trial_staff()
+
+    attrs = %{
+      "title" => "A guest's draft",
+      "format" => "live",
+      "category" => "Art",
+      "summary" => "A draft.",
+      "description" => "A draft sale.",
+      "starts_at" => DateTime.add(now, 86_400, :second)
+    }
+
+    {:ok, old_draft} = Umber.Catalogue.create_draft(attrs, gone)
+    {:ok, _} = Umber.Catalogue.add_lot(old_draft, work().id, 90_000, 140_000)
+    {:ok, new_draft} = Umber.Catalogue.create_draft(attrs, here)
+
+    Cleanup.run(now)
+
+    refute Repo.get(Sale, old_draft.id)
+    assert Repo.get(Sale, new_draft.id)
+  end
 end
