@@ -247,14 +247,19 @@
     height: 64px;
   }
 
+  /* A row that wraps, so a long amount moves the clock down a line
+     instead of breaking itself in two. */
   .al-side {
     grid-column: 2;
-    justify-items: start;
-    text-align: left;
-    grid-auto-flow: column;
-    justify-content: start;
+    display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    gap: 10px;
+    gap: 6px 12px;
+    text-align: left;
+  }
+
+  .al-bid {
+    white-space: nowrap;
   }
 }
 
