@@ -301,13 +301,13 @@ defmodule UmberWeb.SaleLive do
               patch={
                 ~p"/sales/#{@sale.number}?#{Enum.reject([sort: @sort != "number" && @sort, artist: @artist], fn {_, v} -> !v or v == "" end)}"
               }
-              aria-pressed={to_string(@view == "grid")}
+              aria-current={@view == "grid" && "true"}
             >Pictures</.link>
             <.link
               patch={
                 ~p"/sales/#{@sale.number}?#{Enum.reject([sort: @sort != "number" && @sort, artist: @artist, view: "list"], fn {_, v} -> !v or v == "" end)}"
               }
-              aria-pressed={to_string(@view == "list")}
+              aria-current={@view == "list" && "true"}
             >List</.link>
           </div>
           <p class="toolbar-count muted" aria-live="polite">

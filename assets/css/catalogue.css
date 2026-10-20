@@ -184,7 +184,7 @@
   text-decoration: none;
 }
 
-.view-toggle a[aria-pressed="true"] {
+.view-toggle a[aria-current="true"] {
   background: var(--ink);
   color: var(--paper);
 }
