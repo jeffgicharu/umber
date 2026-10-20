@@ -60,7 +60,7 @@
   padding: 0 14px;
   border: 1px solid var(--rule-strong);
   border-radius: 999px;
-  background: rgb(242 237 228 / 0.92);
+  background: rgb(250 248 244 / 0.92);
   font-size: var(--t-xs);
   font-weight: 600;
   letter-spacing: 0.06em;
@@ -117,7 +117,6 @@
 
 .lot-number .num {
   font-size: clamp(5rem, 3rem + 7vw, 9.5rem);
-  font-variation-settings: "opsz" 18;
   line-height: 0.78;
   letter-spacing: -0.05em;
 }
@@ -125,7 +124,7 @@
 .lot-caption .artist-line {
   font-size: var(--t-sm);
   font-weight: 700;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
@@ -226,7 +225,6 @@
 .bid-clock .countdown {
   font-family: var(--serif);
   font-weight: 500;
-  font-variation-settings: "opsz" 18;
 }
 
 .bid-status {
@@ -481,7 +479,7 @@
   transform: translateX(-50%);
   color: var(--night-ink-3);
   font-size: var(--t-xs);
-  letter-spacing: 0.1em;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
   pointer-events: none;
 }

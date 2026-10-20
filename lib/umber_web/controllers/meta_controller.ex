@@ -98,7 +98,7 @@ defmodule UmberWeb.MetaController do
       start_url: "/",
       scope: "/",
       display: "standalone",
-      background_color: "#f2ede4",
+      background_color: "#faf8f4",
       theme_color: "#120d0a",
       icons: [
         %{src: "/images/brand/icon-192.png", sizes: "192x192", type: "image/png"},

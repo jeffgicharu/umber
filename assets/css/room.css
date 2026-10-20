@@ -233,7 +233,7 @@
   font-family: var(--serif);
   font-size: clamp(2.5rem, 1.6rem + 3.6vw, 4.5rem);
   font-weight: 700;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   line-height: 1;
 }
@@ -241,7 +241,7 @@
 .stamp-price {
   font-size: var(--t-md);
   font-weight: 700;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.05em;
 }
 
 .stamp.passed {
@@ -277,7 +277,7 @@
   margin-top: 8px;
   font-size: var(--t-sm);
   font-weight: 700;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
@@ -297,7 +297,6 @@
   font-size: clamp(2.75rem, 1.8rem + 3.2vw, 4.5rem);
   /* Money must read at a glance: a small optical size keeps the 4's
      diagonal and the hairlines strong. */
-  font-variation-settings: "opsz" 18;
   font-weight: 500;
   line-height: 1;
   letter-spacing: -0.02em;
@@ -369,7 +368,7 @@
 
 .bid-big .bid-big-label {
   font-size: var(--t-sm);
-  letter-spacing: 0.14em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 

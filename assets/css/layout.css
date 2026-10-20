@@ -4,7 +4,7 @@
   position: sticky;
   top: 0;
   z-index: 40;
-  background: rgb(242 237 228 / 0.88);
+  background: rgb(250 248 244 / 0.88);
   backdrop-filter: saturate(1.2) blur(14px);
   -webkit-backdrop-filter: saturate(1.2) blur(14px);
   border-bottom: 1px solid var(--rule);
@@ -29,7 +29,6 @@
   font-family: var(--serif);
   font-size: 1.875rem;
   font-weight: 500;
-  font-variation-settings: "opsz" 48;
   letter-spacing: -0.02em;
   line-height: 1;
 }
@@ -37,7 +36,7 @@
 .wordmark .place {
   font-size: 0.6875rem;
   font-weight: 600;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--ink-2);
   white-space: nowrap;
@@ -95,7 +94,7 @@
   color: var(--night-ink);
   font-size: var(--t-xs);
   font-weight: 600;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
   text-decoration: none;
   white-space: nowrap;
@@ -183,7 +182,6 @@
   flex-direction: column;
   padding: 28px var(--gutter) 40px;
   background: var(--paper);
-  background-image: var(--grain);
   overflow-y: auto;
 }
 
@@ -277,7 +275,7 @@
   font-family: var(--sans);
   font-size: var(--t-xs);
   font-weight: 600;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
@@ -316,7 +314,6 @@
   font-family: var(--serif);
   font-size: clamp(5rem, 24vw, 22rem);
   font-weight: 400;
-  font-variation-settings: "opsz" 96;
   line-height: 0.74;
   letter-spacing: -0.04em;
   color: transparent;

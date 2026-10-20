@@ -86,7 +86,7 @@
 
 .night .btn.ghost:hover {
   border-color: var(--night-ink-2);
-  background: rgb(242 237 228 / 0.05);
+  background: rgb(250 248 244 / 0.05);
 }
 
 .text-link {
@@ -361,7 +361,7 @@
 .caption .artist {
   font-size: var(--t-xs);
   font-weight: 700;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
@@ -397,7 +397,7 @@
 .estimate-word {
   font-size: var(--t-xs);
   font-weight: 600;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
@@ -486,7 +486,6 @@
 .lot-card .lotno {
   font-family: var(--serif);
   font-size: 3.25rem;
-  font-variation-settings: "opsz" 18;
   line-height: 0.82;
   letter-spacing: -0.03em;
   min-width: 1.1em;
@@ -620,7 +619,7 @@
   text-align: left;
   font-size: var(--t-xs);
   font-weight: 600;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--ink-2);
   white-space: nowrap;
@@ -699,7 +698,7 @@
   padding: 0 14px;
   border: 1px solid var(--rule-strong);
   border-radius: 999px;
-  background: rgb(242 237 228 / 0.92);
+  background: rgb(250 248 244 / 0.92);
   font-size: var(--t-sm);
   font-weight: 600;
 }

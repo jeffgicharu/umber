@@ -43,7 +43,6 @@
 
 .sale-head-number .num {
   font-size: clamp(3.5rem, 2rem + 6vw, 8rem);
-  font-variation-settings: "opsz" 18;
   line-height: 0.82;
   letter-spacing: -0.04em;
 }
@@ -160,7 +159,7 @@
 
 .toolbar .field label {
   font-size: var(--t-xs);
-  letter-spacing: 0.12em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--ink-2);
 }

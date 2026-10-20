@@ -20,7 +20,6 @@
 
 .auth-paddle {
   font-size: clamp(5rem, 3rem + 8vw, 10rem);
-  font-variation-settings: "opsz" 18;
   line-height: 0.9;
   letter-spacing: -0.04em;
   color: var(--brass-hi);
@@ -686,7 +685,6 @@
 
 .error-number {
   font-size: clamp(7rem, 4rem + 14vw, 15rem);
-  font-variation-settings: "opsz" 18;
   line-height: 0.8;
   letter-spacing: -0.05em;
   text-decoration: line-through;

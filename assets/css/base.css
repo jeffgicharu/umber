@@ -14,11 +14,10 @@ body {
   margin: 0;
   min-height: 100vh;
   background-color: var(--paper);
-  background-image: var(--grain);
   color: var(--ink);
   font-family: var(--sans);
   font-size: var(--t-base);
-  line-height: 1.55;
+  line-height: 1.6;
   font-feature-settings: "kern";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -43,9 +42,9 @@ h3,
 h4 {
   margin: 0;
   font-family: var(--serif);
-  font-weight: 400;
+  font-weight: 500;
   font-optical-sizing: auto;
-  line-height: 1.05;
+  line-height: 1.1;
   letter-spacing: -0.01em;
   text-wrap: balance;
 }
@@ -120,9 +119,6 @@ button {
   font-variant-numeric: lining-nums;
 }
 
-/* Numerals set in the display face use a small optical size: at the large
-   sizes Bodoni's 4 is a hairline diagonal that reads as a 1. */
-.serif.num,
 .bid-amount,
 .bid-big-amount,
 .rostrum-amount,
@@ -137,7 +133,6 @@ button {
 .result-totals .serif,
 .lot-caption .year,
 .room-title .num {
-  font-variation-settings: "opsz" 18;
 }
 
 .bid-amount,
@@ -149,6 +144,7 @@ button {
 
 .serif {
   font-family: var(--serif);
+  font-optical-sizing: auto;
 }
 
 .title {
@@ -160,9 +156,9 @@ button {
 .label {
   font-family: var(--sans);
   font-size: var(--t-xs);
-  font-weight: 600;
-  line-height: 1.3;
-  letter-spacing: 0.14em;
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--ink-2);
 }

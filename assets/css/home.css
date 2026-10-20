@@ -19,7 +19,6 @@
 .hero-title {
   font-size: clamp(3.1rem, 1.4rem + 5.6vw, 6.75rem);
   font-weight: 400;
-  font-variation-settings: "opsz" 96;
   line-height: 0.92;
   letter-spacing: -0.035em;
 }
@@ -119,7 +118,6 @@
   z-index: 2;
   font-family: var(--serif);
   font-size: clamp(7rem, 3rem + 14vw, 17rem);
-  font-variation-settings: "opsz" 18;
   line-height: 0.8;
   letter-spacing: -0.06em;
   color: var(--ink);

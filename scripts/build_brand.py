@@ -1,6 +1,6 @@
 """Builds Umber's mark, favicons, app icons and sharing picture.
 
-The mark is the capital U of Bodoni Moda (weight 500, optical size 96), in
+The mark is the capital U of Newsreader (weight 600, optical size 24), in
 brass on the salesroom's umber-black. The outline is taken from the font
 itself, so the SVG favicon does not depend on the font being loaded.
 
@@ -26,7 +26,7 @@ MASTERS = ROOT / "generated" / "masters"
 
 NIGHT = "#120d0a"
 BRASS = "#c9a46a"
-PAPER = "#f2ede4"
+PAPER = "#faf8f4"
 
 
 def instance(src, **axes):
@@ -107,9 +107,9 @@ def main():
     SHARE.mkdir(parents=True, exist_ok=True)
     # Display cut for the large wordmark; a small optical size, with sturdier
     # hairlines, for the icons, which are seen at 16 to 192 pixels.
-    _, display = instance(FONTS / "bodoni-moda-latin-normal.woff2", wght=500, opsz=96)
-    icon_inst, icon = instance(FONTS / "bodoni-moda-latin-normal.woff2", wght=640, opsz=11)
-    _, text = instance(FONTS / "schibsted-grotesk-latin-normal.woff2", wght=600)
+    _, display = instance(FONTS / "newsreader-latin-normal.woff2", wght=500, opsz=72)
+    icon_inst, icon = instance(FONTS / "newsreader-latin-normal.woff2", wght=600, opsz=24)
+    _, text = instance(FONTS / "public-sans-latin-normal.woff2", wght=600)
 
     (OUT / "favicon.svg").write_text(svg_mark(icon_inst))
     raster(icon, 180, radius=0).convert("RGB").save(OUT / "apple-touch-icon.png", optimize=True)
