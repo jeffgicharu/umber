@@ -1,6 +1,22 @@
 {
   "lot-001": {
     "h": 1800,
+    "second": {
+      "file": "lot-001-room",
+      "h": 1600,
+      "kind": "room",
+      "w": 2400
+    },
+    "studio": false,
+    "w": 2400,
+    "widths": [
+      480,
+      960,
+      1600
+    ]
+  },
+  "lot-001-room": {
+    "h": 1600,
     "studio": false,
     "w": 2400,
     "widths": [
@@ -11,7 +27,23 @@
   },
   "lot-002": {
     "h": 2400,
+    "second": {
+      "file": "lot-002-room",
+      "h": 2000,
+      "kind": "room",
+      "w": 1600
+    },
     "studio": true,
+    "w": 1600,
+    "widths": [
+      480,
+      960,
+      1600
+    ]
+  },
+  "lot-002-room": {
+    "h": 2000,
+    "studio": false,
     "w": 1600,
     "widths": [
       480,
@@ -21,8 +53,24 @@
   },
   "lot-003": {
     "h": 2200,
+    "second": {
+      "file": "lot-003-detail",
+      "h": 1600,
+      "kind": "detail",
+      "w": 1600
+    },
     "studio": false,
     "w": 1833,
+    "widths": [
+      480,
+      960,
+      1600
+    ]
+  },
+  "lot-003-detail": {
+    "h": 1600,
+    "studio": false,
+    "w": 1600,
     "widths": [
       480,
       960,
@@ -41,6 +89,12 @@
   },
   "lot-005": {
     "h": 2200,
+    "second": {
+      "file": "lot-005-detail",
+      "h": 1600,
+      "kind": "detail",
+      "w": 1600
+    },
     "studio": false,
     "w": 2200,
     "widths": [
@@ -49,9 +103,35 @@
       1600
     ]
   },
+  "lot-005-detail": {
+    "h": 1600,
+    "studio": false,
+    "w": 1600,
+    "widths": [
+      480,
+      960,
+      1600
+    ]
+  },
   "lot-006": {
     "h": 2000,
+    "second": {
+      "file": "lot-006-detail",
+      "h": 1600,
+      "kind": "detail",
+      "w": 1600
+    },
     "studio": true,
+    "w": 1600,
+    "widths": [
+      480,
+      960,
+      1600
+    ]
+  },
+  "lot-006-detail": {
+    "h": 1600,
+    "studio": false,
     "w": 1600,
     "widths": [
       480,
@@ -95,10 +175,66 @@
       1600
     ]
   },
+  "lot-009": {
+    "h": 1800,
+    "studio": false,
+    "w": 2400,
+    "widths": [
+      480,
+      960,
+      1600
+    ]
+  },
+  "lot-010": {
+    "h": 2200,
+    "studio": false,
+    "w": 1760,
+    "widths": [
+      480,
+      960,
+      1600
+    ]
+  },
+  "lot-011": {
+    "h": 2200,
+    "studio": true,
+    "w": 1600,
+    "widths": [
+      480,
+      960,
+      1600
+    ]
+  },
+  "lot-012": {
+    "h": 1800,
+    "studio": false,
+    "w": 2400,
+    "widths": [
+      480,
+      960,
+      1600
+    ]
+  },
   "lot-013": {
     "h": 1700,
+    "second": {
+      "file": "lot-013-detail",
+      "h": 1600,
+      "kind": "detail",
+      "w": 1600
+    },
     "studio": true,
     "w": 2200,
+    "widths": [
+      480,
+      960,
+      1600
+    ]
+  },
+  "lot-013-detail": {
+    "h": 1600,
+    "studio": false,
+    "w": 1600,
     "widths": [
       480,
       960,
@@ -135,10 +271,36 @@
       1600
     ]
   },
+  "lot-017": {
+    "h": 1700,
+    "studio": true,
+    "w": 2200,
+    "widths": [
+      480,
+      960,
+      1600
+    ]
+  },
   "lot-018": {
     "h": 2200,
+    "second": {
+      "file": "lot-018-room",
+      "h": 1600,
+      "kind": "room",
+      "w": 2400
+    },
     "studio": false,
     "w": 1760,
+    "widths": [
+      480,
+      960,
+      1600
+    ]
+  },
+  "lot-018-room": {
+    "h": 1600,
+    "studio": false,
+    "w": 2400,
     "widths": [
       480,
       960,
@@ -175,9 +337,55 @@
       1600
     ]
   },
+  "lot-022": {
+    "h": 1500,
+    "studio": true,
+    "w": 2000,
+    "widths": [
+      480,
+      960,
+      1600
+    ]
+  },
+  "lot-023": {
+    "h": 1700,
+    "studio": true,
+    "w": 2200,
+    "widths": [
+      480,
+      960,
+      1600
+    ]
+  },
+  "lot-024": {
+    "h": 1833,
+    "studio": false,
+    "w": 2200,
+    "widths": [
+      480,
+      960,
+      1600
+    ]
+  },
   "lot-025": {
     "h": 1600,
+    "second": {
+      "file": "lot-025-room",
+      "h": 1600,
+      "kind": "room",
+      "w": 2400
+    },
     "studio": true,
+    "w": 2400,
+    "widths": [
+      480,
+      960,
+      1600
+    ]
+  },
+  "lot-025-room": {
+    "h": 1600,
+    "studio": false,
     "w": 2400,
     "widths": [
       480,
@@ -187,7 +395,23 @@
   },
   "lot-026": {
     "h": 2000,
+    "second": {
+      "file": "lot-026-detail",
+      "h": 1600,
+      "kind": "detail",
+      "w": 1600
+    },
     "studio": true,
+    "w": 1600,
+    "widths": [
+      480,
+      960,
+      1600
+    ]
+  },
+  "lot-026-detail": {
+    "h": 1600,
+    "studio": false,
     "w": 1600,
     "widths": [
       480,
@@ -233,8 +457,34 @@
   },
   "lot-029": {
     "h": 2200,
+    "second": {
+      "file": "lot-029-detail",
+      "h": 1600,
+      "kind": "detail",
+      "w": 1600
+    },
     "studio": true,
     "w": 1600,
+    "widths": [
+      480,
+      960,
+      1600
+    ]
+  },
+  "lot-029-detail": {
+    "h": 1600,
+    "studio": false,
+    "w": 1600,
+    "widths": [
+      480,
+      960,
+      1600
+    ]
+  },
+  "lot-030": {
+    "h": 1600,
+    "studio": true,
+    "w": 2400,
     "widths": [
       480,
       960,
@@ -251,10 +501,300 @@
       1600
     ]
   },
+  "lot-032": {
+    "h": 1600,
+    "studio": true,
+    "w": 2400,
+    "widths": [
+      480,
+      960,
+      1600
+    ]
+  },
+  "lot-033": {
+    "h": 1600,
+    "studio": true,
+    "w": 2400,
+    "widths": [
+      480,
+      960,
+      1600
+    ]
+  },
+  "lot-034": {
+    "h": 2400,
+    "studio": true,
+    "w": 1400,
+    "widths": [
+      480,
+      960,
+      1400
+    ]
+  },
+  "lot-035": {
+    "h": 1500,
+    "studio": false,
+    "w": 2000,
+    "widths": [
+      480,
+      960,
+      1600
+    ]
+  },
+  "lot-036": {
+    "h": 2000,
+    "studio": false,
+    "w": 1636,
+    "widths": [
+      480,
+      960,
+      1600
+    ]
+  },
+  "lot-037": {
+    "h": 2200,
+    "studio": true,
+    "w": 1600,
+    "widths": [
+      480,
+      960,
+      1600
+    ]
+  },
+  "lot-038": {
+    "h": 2000,
+    "studio": false,
+    "w": 2000,
+    "widths": [
+      480,
+      960,
+      1600
+    ]
+  },
+  "lot-039": {
+    "h": 1333,
+    "studio": false,
+    "w": 2000,
+    "widths": [
+      480,
+      960,
+      1600
+    ]
+  },
+  "lot-040": {
+    "h": 1600,
+    "studio": true,
+    "w": 2000,
+    "widths": [
+      480,
+      960,
+      1600
+    ]
+  },
+  "lot-041": {
+    "h": 1455,
+    "studio": false,
+    "w": 2000,
+    "widths": [
+      480,
+      960,
+      1600
+    ]
+  },
+  "lot-042": {
+    "h": 2000,
+    "studio": false,
+    "w": 1600,
+    "widths": [
+      480,
+      960,
+      1600
+    ]
+  },
+  "lot-043": {
+    "h": 1429,
+    "studio": false,
+    "w": 2000,
+    "widths": [
+      480,
+      960,
+      1600
+    ]
+  },
+  "lot-044": {
+    "h": 2000,
+    "studio": true,
+    "w": 1600,
+    "widths": [
+      480,
+      960,
+      1600
+    ]
+  },
+  "lot-045": {
+    "h": 2000,
+    "studio": false,
+    "w": 2000,
+    "widths": [
+      480,
+      960,
+      1600
+    ]
+  },
+  "lot-046": {
+    "h": 2000,
+    "studio": false,
+    "w": 2000,
+    "widths": [
+      480,
+      960,
+      1600
+    ]
+  },
+  "lot-047": {
+    "h": 2000,
+    "studio": true,
+    "w": 1600,
+    "widths": [
+      480,
+      960,
+      1600
+    ]
+  },
+  "lot-048": {
+    "h": 2000,
+    "studio": true,
+    "w": 1600,
+    "widths": [
+      480,
+      960,
+      1600
+    ]
+  },
+  "lot-049": {
+    "h": 2200,
+    "studio": true,
+    "w": 1600,
+    "widths": [
+      480,
+      960,
+      1600
+    ]
+  },
+  "lot-050": {
+    "h": 1600,
+    "studio": true,
+    "w": 2400,
+    "widths": [
+      480,
+      960,
+      1600
+    ]
+  },
+  "lot-051": {
+    "h": 2000,
+    "studio": true,
+    "w": 1600,
+    "widths": [
+      480,
+      960,
+      1600
+    ]
+  },
+  "lot-052": {
+    "h": 1600,
+    "studio": true,
+    "w": 2400,
+    "widths": [
+      480,
+      960,
+      1600
+    ]
+  },
+  "lot-053": {
+    "h": 2400,
+    "studio": true,
+    "w": 1400,
+    "widths": [
+      480,
+      960,
+      1400
+    ]
+  },
+  "lot-054": {
+    "h": 1600,
+    "studio": true,
+    "w": 2400,
+    "widths": [
+      480,
+      960,
+      1600
+    ]
+  },
+  "photo-handlers": {
+    "h": 1600,
+    "studio": false,
+    "w": 2400,
+    "widths": [
+      480,
+      960,
+      1600
+    ]
+  },
+  "photo-house": {
+    "h": 1600,
+    "studio": false,
+    "w": 2400,
+    "widths": [
+      480,
+      960,
+      1600
+    ]
+  },
+  "photo-rostrum": {
+    "h": 2000,
+    "studio": false,
+    "w": 1600,
+    "widths": [
+      480,
+      960,
+      1600
+    ]
+  },
   "photo-salesroom": {
     "h": 1536,
     "studio": false,
     "w": 2752,
+    "widths": [
+      480,
+      960,
+      1600
+    ]
+  },
+  "photo-specialist": {
+    "h": 2000,
+    "studio": false,
+    "w": 1600,
+    "widths": [
+      480,
+      960,
+      1600
+    ]
+  },
+  "photo-valuation": {
+    "h": 1600,
+    "studio": false,
+    "w": 2400,
+    "widths": [
+      480,
+      960,
+      1600
+    ]
+  },
+  "photo-viewing": {
+    "h": 1600,
+    "studio": false,
+    "w": 2400,
     "widths": [
       480,
       960,
