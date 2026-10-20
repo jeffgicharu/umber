@@ -75,10 +75,10 @@ defmodule UmberWeb.ResultsLive do
                     <span><strong>{lot.work.artist.name}</strong><br /><em class="serif">{lot.work.title}</em>, {lot.work.year}</span>
                   </a>
                 </td>
-                <td class="num">
+                <td class="num" data-label="Estimate">
                   {Format.thousands(lot.estimate_low)}–{Format.thousands(lot.estimate_high)}
                 </td>
-                <td class="num">
+                <td class="num" data-label="Hammer">
                   <span
                     :if={lot.status == "sold"}
                     class={["hammer", lot.hammer > lot.estimate_high && "above"]}

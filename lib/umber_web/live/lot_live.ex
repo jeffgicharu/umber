@@ -433,7 +433,7 @@ defmodule UmberWeb.LotLive do
             <h1><em>{@lot.work.title}</em><span class="year">, {@lot.work.year}</span></h1>
             <p class="lot-medium">{@lot.work.medium}</p>
             <p class="lot-medium num">
-              {Work.dimensions(@lot.work)}<span :if={@lot.work.edition}> · Edition {@lot.work.edition}</span>
+              {Work.dimensions(@lot.work)}<span :if={@lot.work.edition}> · {Work.edition(@lot.work)}</span>
             </p>
             <.estimate lot={@lot} class="lot-estimate" />
           </header>

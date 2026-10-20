@@ -201,8 +201,7 @@ defmodule UmberWeb.RoomLive do
             Sale {@sale.number} · {@sale.title}
           </p>
           <p class="room-watchers label" aria-live="off">
-            <span class="num">{@watchers}</span>
-            watching here
+            <span><span class="num">{@watchers}</span> watching here</span>
             <button type="button" class="sound-toggle" data-sound aria-pressed="false">Sound off</button>
           </p>
         </div>

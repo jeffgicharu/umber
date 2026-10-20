@@ -391,6 +391,7 @@
 .rostrum-title {
   margin: 6px 0 4px;
   font-size: var(--t-xl);
+  line-height: 1.15;
 }
 
 .rostrum-facts {

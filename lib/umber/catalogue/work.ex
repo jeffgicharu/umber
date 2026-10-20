@@ -38,5 +38,13 @@ defmodule Umber.Catalogue.Work do
 
   defp format_cm(%Decimal{} = d), do: d |> Decimal.normalize() |> Decimal.to_string(:normal)
 
+  @doc """
+  The edition as a catalogue prints it: "Edition 3 of 8" for a numbered copy,
+  or the note as written ("From the edition of 20") when the copy is not numbered.
+  """
+  def edition(%__MODULE__{edition: nil}), do: nil
+  def edition(%__MODULE__{edition: <<d, _::binary>> = e}) when d in ?0..?9, do: "Edition " <> e
+  def edition(%__MODULE__{edition: e}), do: e
+
   def aspect(%__MODULE__{image_width: w, image_height: h}), do: w / h
 end

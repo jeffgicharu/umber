@@ -3,7 +3,7 @@ defmodule UmberWeb.InvoiceLive do
 
   alias Umber.Auctions
   alias Umber.Auctions.Invoice
-  alias Umber.Catalogue.{Lot, Work}
+  alias Umber.Catalogue.Lot
   alias UmberWeb.Meta
 
   @impl true
@@ -85,7 +85,8 @@ defmodule UmberWeb.InvoiceLive do
               </td>
             </tr>
             <tr class="invoice-total">
-              <td>Total due</td><td class="num serif">{Format.money(@inv.total)}</td>
+              <td>{if @inv.status == "paid", do: "Total paid", else: "Total due"}</td>
+              <td class="num serif">{Format.money(@inv.total)}</td>
             </tr>
           </tbody>
         </table>
@@ -97,7 +98,7 @@ defmodule UmberWeb.InvoiceLive do
           </p>
         </section>
         <p class="invoice-note muted">
-          {Work.dimensions(@inv.lot.work)} · {@inv.lot.work.medium}. Sold on Umber's conditions of sale.
+          Sold on Umber's <a href={~p"/conditions"}>conditions of sale</a>.
         </p>
         <button type="button" class="btn ghost print-button" onclick="window.print()">Print the invoice</button>
       </article>

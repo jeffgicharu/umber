@@ -293,7 +293,7 @@ defmodule UmberWeb.Desk.RostrumLive do
               {if @next_lot, do: "Open lot #{@next_lot.number}", else: "No more lots"}
             </button>
             <form phx-submit="floor" class="floor-form">
-              <label for="floor-paddle" class="label">Bid in the room</label>
+              <label for="floor-paddle" class="label">Bid in the room · paddle optional</label>
               <div class="max-row">
                 <input
                   id="floor-paddle"
@@ -301,7 +301,7 @@ defmodule UmberWeb.Desk.RostrumLive do
                   value={@paddle}
                   class="input"
                   inputmode="numeric"
-                  placeholder="Paddle (optional)"
+                  placeholder="Paddle"
                   autocomplete="off"
                   disabled={!(@mine && @taking)}
                 />

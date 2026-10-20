@@ -4,7 +4,7 @@
   display: grid;
   grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
   gap: clamp(32px, 6vw, 96px);
-  align-items: start;
+  align-items: stretch;
   padding-block: clamp(32px, 6vw, 88px);
 }
 
@@ -337,7 +337,17 @@
   display: grid;
   gap: 4px;
   justify-items: end;
+  margin-left: auto;
   text-align: right;
+}
+
+/* Once it wraps under the address on a phone, it reads down the left edge. */
+@media (max-width: 640px) {
+  .invoice-meta {
+    justify-items: start;
+    margin-left: 0;
+    text-align: left;
+  }
 }
 
 .invoice-number {
