@@ -278,6 +278,11 @@ td.desk-row-actions > * + * {
   margin-top: 14px;
 }
 
+.add-lot .hint,
+.add-lot .error-text {
+  margin-top: 10px;
+}
+
 .consign-photos {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));

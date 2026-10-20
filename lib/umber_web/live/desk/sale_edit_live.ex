@@ -101,6 +101,9 @@ defmodule UmberWeb.Desk.SaleEditLive do
       {:error, :published} ->
         {:noreply, assign(socket, lot_error: "Lots cannot be added to a published sale.")}
 
+      {:error, :already_in_sale} ->
+        {:noreply, assign(socket, lot_error: "That work is already a lot in this sale.")}
+
       _ ->
         {:noreply,
          assign(socket,
@@ -332,16 +335,22 @@ defmodule UmberWeb.Desk.SaleEditLive do
             :if={@editable}
             for={@lot_form}
             phx-submit="add-lot"
-            id="add-lot-form"
+            id={"add-lot-form-#{length(@lots)}"}
             class="add-lot"
           >
+            <%!-- A new id after each lot gives fresh, empty fields, and works
+                 already in the sale are not offered again. --%>
             <h3 class="label">Add a lot from the archive</h3>
             <.input
               field={@lot_form[:work_id]}
               type="select"
               label="Work"
               prompt="Choose a work"
-              options={Enum.map(@works, &{"#{&1.artist.name}: #{&1.title}, #{&1.year}", &1.id})}
+              options={
+                for w <- @works,
+                    w.id not in Enum.map(@lots, & &1.work_id),
+                    do: {"#{w.artist.name}: #{w.title}, #{w.year}", w.id}
+              }
             />
             <div class="field-pair">
               <.input

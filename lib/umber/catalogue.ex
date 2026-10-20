@@ -342,6 +342,18 @@ defmodule Umber.Catalogue do
   @doc "Adds a work from the archive to a draft sale as the next lot."
   def add_lot(%Sale{status: "draft"} = sale, work_id, low, high)
       when is_integer(low) and is_integer(high) and low > 0 and high >= low do
+    # One object can only be one lot in a sale.
+    if Repo.exists?(from l in Lot, where: l.sale_id == ^sale.id and l.work_id == ^work_id) do
+      {:error, :already_in_sale}
+    else
+      insert_lot(sale, work_id, low, high)
+    end
+  end
+
+  def add_lot(%Sale{status: "draft"}, _, _, _), do: {:error, :estimate}
+  def add_lot(_, _, _, _), do: {:error, :published}
+
+  defp insert_lot(sale, work_id, low, high) do
     number =
       (Repo.one(from l in Lot, where: l.sale_id == ^sale.id, select: max(l.number)) || 0) + 1
 
@@ -358,9 +370,6 @@ defmodule Umber.Catalogue do
     }
     |> Repo.insert()
   end
-
-  def add_lot(%Sale{status: "draft"}, _, _, _), do: {:error, :estimate}
-  def add_lot(_, _, _, _), do: {:error, :published}
 
   def remove_lot(%Sale{status: "draft"} = sale, lot_id) do
     Repo.transaction(fn ->
