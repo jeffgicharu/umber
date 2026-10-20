@@ -316,6 +316,7 @@
 .lot-history li {
   display: grid;
   grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 0.9fr) auto;
+  align-items: baseline;
   gap: 10px;
   padding: 10px 0;
   border-bottom: 1px solid var(--rule);
