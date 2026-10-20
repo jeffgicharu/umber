@@ -690,6 +690,7 @@ defmodule UmberWeb.LotLive do
   attr :choices, :list, required: true
   attr :own_max, :integer
   attr :label, :string, required: true
+  attr :selected, :integer, default: nil, doc: "the choice shown first; the lowest when nil"
 
   defp max_form(assigns) do
     ~H"""
@@ -697,7 +698,7 @@ defmodule UmberWeb.LotLive do
       <label for="max-amount" class="label">{@label}</label>
       <div class="max-row">
         <select id="max-amount" name="max" class="select">
-          <option :for={c <- @choices} value={c}>{Format.money(c)}</option>
+          <option :for={c <- @choices} value={c} selected={c == @selected}>{Format.money(c)}</option>
         </select>
         <button type="submit" class="btn ghost">Set maximum</button>
       </div>
@@ -747,6 +748,7 @@ defmodule UmberWeb.LotLive do
             <.max_form
               choices={absentee_choices(@lot, @user)}
               own_max={@own_max}
+              selected={@own_max}
               label={
                 if @own_max, do: "Change your absentee maximum", else: "Leave an absentee maximum"
               }
